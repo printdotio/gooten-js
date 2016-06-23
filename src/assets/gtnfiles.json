@@ -1,0 +1,20 @@
+{
+  "files":[
+    "js/src/gtn.namespace.js",
+    "js/src/gtn.util.js",
+    "js/src/gtn.util.http.js",
+
+    "js/src/gtn.util.di.js",
+    "js/src/gtn.util.di.init.js",
+
+    "js/src/gtn.config.js",
+
+    "js/src/gtn.api.js",
+
+    "js/lib/braintree.js"
+  ],
+  "tests":[
+    "js/tests/gtn.api.tests.js",
+    "js/tests/gtn.config.tests.js"
+  ]
+}
