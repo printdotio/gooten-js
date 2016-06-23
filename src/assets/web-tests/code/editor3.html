@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>editor3 testing</title>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .example {
+      margin-bottom: 40px;
+    }
+
+    .cnt {
+      border: 1px dashed red;
+      position: relative;
+    }
+
+    .blue-dot {
+      border: 1px dashed blue;
+    }
+
+    .green-dot {
+      border: 1px dashed green;
+    }
+
+    .pos {
+      border-right: 1px dotted red;
+      border-bottom: 1px dotted blue;
+      border-left: 1px dotted yellow;
+      border-top: 1px dotted gray;
+    }
+
+    .ctrls {
+      display: block;
+      position: absolute;
+      margin: auto;
+      padding: 0;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      width: 68px;
+    }
+
+    .ctrls-move {
+      display: inline-block;
+      background: red;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ctrls-rotate {
+      display: inline-block;
+      background: blue;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ctrls-scale {
+      display: inline-block;
+      background: turquoise;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ncz-overlay-layer {
+      pointer-events: none;
+
+    }
+
+    .ncz-image-layer {
+      cursor: -webkit-grab;
+      cursor: grab;
+    }
+
+    .ncz-image-layer:active {
+      cursor: -webkit-grabbing;
+      cursor: grabbing;
+    }
+
+    pre {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="example" id="tldr">
+      <h4>tl;dr;</h4>
+      <p>can do everything</p>
+      <div class="cnt"></div>
+      <br/>
+      <div>
+        <input type="range" min=".01" max="10" id="zoom"/>
+      </div>
+      <br/>
+      <div class="buttons">
+        <button class="btn js-rotate">Rotate Container</button>
+        <button class="btn js-imgmanip">Get Manip</button>
+        <button class="btn js-pimgmanip">Get Preview Manip</button>
+        <button class="btn js-il">Get IL</button>
+        <button class="btn js-canvas">Canvas Gen</button>
+        <button class="btn js-reconstitute">Reconstitute</button>
+        <button class="btn js-reconstitute2">Reconstitute2</button>
+        <button class="btn js-reconstitute3">Reconstitute3</button>
+      </div>
+      <br />
+      <div class="canvases clearfix"></div>
+      <div class="manips"></div>
+      <div class="live-info"></div>
+      <div class="info"></div>
+    </div>
+
+
+    <br/>
+    <br/>
+
+
+  </div>
+  <div class="row">
+    <div id="embedder"></div>
+  </div>
+</div>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="https://cdn.rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="../../assets/js/core/lib/knockout-2.2.0.js"></script>
+<script src="../../assets/js/core/lib/lo-dash-1.2.0.js"></script>
+<script src="../../assets/js/core/src/GTN.namespace.js"></script>
+<script src="../../assets/js/core/src/GTN.util.js"></script>
+<script src="../../assets/js/core/src/GTN.util.di.js"></script>
+<script src="../../assets/js/core/src/GTN.util.di.init.js"></script>
+<script src="../../assets/js/core/src/GTN.models.positioning.js"></script>
+<script src="../../assets/js/core/src/GTN.models.position.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.getcommitstate.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.violationstrategy.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.suggestedtransform.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdater.js"></script>
+<script src="../../assets/js/core/src/GTN.models.perspective.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.container.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.containerfns.exportstrategies.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.containerfns.simpleimpl.js"></script>
+<script src="../../assets/js/core/src/GTN.services.templatemapper.js"></script>
+
+
+<script>
+
+  $(function () {
+
+    var containerCtor = GTN.util.di.get("GTN.ui.Container");
+    var simpleImpl = GTN.util.di.get("GTN.ui.containerFns.simpleImpl");
+    var exportStrategies = GTN.util.di.get("GTN.ui.containerFns.exportStrategies");
+    var templateMapper = GTN.util.di.get("GTN.services.templateMapper");
+
+    var url600w400h = "http://cdn.print.io/temp/600w400h2.png";
+    var url400w600h = "http://cdn.print.io/temp/400w600h2.png";
+    var url150wx100h = "https://s3-us-west-2.amazonaws.com/gooten-assets/testing/test-img.png";
+
+    var template = {
+      "Spaces": [
+        {
+          "Id": "F190F",
+          "Index": 1,
+          "FinalX1": 450,
+          "FinalX2": 7650,
+          "FinalY1": 450,
+          "FinalY2": 5850,
+          "Layers": [
+            {
+              "Id": "7F61C",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 8100,
+              "Y1": 0,
+              "Y2": 6300,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-canvaswraps/CanvasWrap18x24-Black-Background.png",
+              "IncludeInPrint": false
+            },
+            {
+              "Id": "8A04B",
+              "Type": "Image",
+              "ZIndex": 1,
+              "X1": 450,
+              "X2": 7650,
+              "Y1": 450,
+              "Y2": 5850
+            },
+            {
+              "Id": "040B2",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 8100,
+              "Y1": 0,
+              "Y2": 6300,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-canvaswraps/CanvasWrap18x24-OverlayBlackv4.png",
+              "IncludeInPrint": false
+            }
+          ]
+        }
+      ],
+      "Name": "Single",
+      "ImageUrl": "http://app-imgs.print.io/product-canvaswraps/RectangleSingleImageA.png",
+      "IsDefault": true
+    };
+
+    var shirtTemplate = {
+      "Spaces": [
+        {
+          "Id": "C1B69",
+          "Index": 1,
+          "FinalX1": 2589,
+          "FinalX2": 7089,
+          "FinalY1": 1603,
+          "FinalY2": 7303,
+          "DefaultRotation": 0,
+          "Description": "Front",
+          "Layers": [
+            {
+              "Id": "90106",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 9340,
+              "Y1": 0,
+              "Y2": 11010,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Background/Front/DT6000_Black_Background_Front.png",
+              "IncludeInPrint": false
+            },
+            {
+              "Id": "F52EB",
+              "Type": "Image",
+              "ZIndex": 1,
+              "X1": 2589,
+              "X2": 7089,
+              "Y1": 1603,
+              "Y2": 7303,
+              "ImageFill": "CanFill",
+              "IncludeInPrint": true
+            },
+            {
+              "Id": "DD7A1",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 9340,
+              "Y1": 0,
+              "Y2": 11010,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Overlay/Front/DT6000_Black_Front_Overlay.png",
+              "IncludeInPrint": false
+            }
+          ]
+        }
+      ]
+    };
+
+    var acrylicTemplate = {
+      "Spaces": [
+        {
+          "Id": "56785",
+          "Index": 1,
+          "Layers": [
+            {
+              "Id": "7698E",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 2138,
+              "Y1": 0,
+              "Y2": 1538,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-acrylicblocks/AcrylBlockBack_5x7v2.png",
+              "IncludeInPrint": false
+            },
+            {
+              "Id": "D687E",
+              "Type": "Image",
+              "ZIndex": 1,
+              "X1": 0,
+              "X2": 2138,
+              "Y1": 0,
+              "Y2": 1538
+            },
+            {
+              "Id": "0C3C4",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 2138,
+              "Y1": 0,
+              "Y2": 1538,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-acrylicblocks/AcrylicBlockOverlay_5x7v2.png",
+              "IncludeInPrint": false
+            }
+          ]
+        }
+      ],
+      "Name": "Single",
+      "ImageUrl": "http://app-imgs.print.io/product-acrylicblocks/RectangleSingle.png",
+      "IsDefault": true
+    };
+
+
+    var bagTemplate = {
+      "Spaces": [
+        {
+          "Id": "6C777", "Index": 1, "Description": "Left side",
+          "Layers": [
+            {
+              "Id": "C7279",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 2100,
+              "Y1": 0,
+              "Y2": 1425,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85-Backgroundv3.png",
+              "IncludeInPrint": false
+            },
+            {"Id": "0CDA7", "Type": "Image", "ZIndex": 1, "X1": 0, "X2": 2100, "Y1": 0, "Y2": 1425},
+            {
+              "Id": "5E48F", "Type": "Design", "ZIndex": 2, "X1": 0, "X2": 2100, "Y1": 0, "Y2": 1425,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85Tbottom-Overlayv5.png",
+              "IncludeInPrint": false
+            }]
+        }, {
+          "Id": "A0684", "Index": 2, "Description": "Right side",
+          "Layers": [{
+            "Id": "72799C",
+            "Type": "Design",
+            "ZIndex": 0,
+            "X1": 0,
+            "X2": 2100,
+            "Y1": 0,
+            "Y2": 1425,
+            "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85-Backgroundv3.png",
+            "IncludeInPrint": false
+          },
+            {"Id": "CDA731", "Type": "Image", "ZIndex": 1, "X1": 0, "X2": 2100, "Y1": 0, "Y2": 1425},
+            {
+              "Id": "E48F94",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 2100,
+              "Y1": 0,
+              "Y2": 1425,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85Tbottom-Overlayv5.png",
+              "IncludeInPrint": false
+            }]
+        }],
+      "Name": "Single",
+      "ImageUrl": "http://app-imgs.print.io/product-accessorypouches/AccessoryPouch125x85Tbottom-Icon.png",
+      "IsDefault": true
+    };
+
+    var apiData = {"Options":[{"Spaces":[{"Id":"4A2CA","Index":1,"FinalX1":2237,"FinalX2":6737,"FinalY1":1343,"FinalY2":7043,"DefaultRotation":0,"Description":"Front","Layers":[{"Id":"90106","Type":"Design","ZIndex":0,"X1":0,"X2":9340,"Y1":0,"Y2":11010,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-tshirts/Background/Front/AA2001_AshGray_Front_Background.png","IncludeInPrint":false},{"Id":"349BD","Type":"Image","ZIndex":1,"X1":2237,"X2":6737,"Y1":1343,"Y2":7043,"ImageFill":"CanFill","IncludeInPrint":true},{"Id":"DD7A1","Type":"Design","ZIndex":2,"X1":0,"X2":9340,"Y1":0,"Y2":11010,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-tshirts/Overlay/Front/AA2001_AshGray_Front_Overlay_Underbase.png","IncludeInPrint":false}]}],"Name":"Single","ImageUrl":"http://cdn.print.io/product-tshirts/Preview/AA2001_AshGray_Front_Background.png","IsDefault":true}]};
+    var url_live = "http://az504546.vo.msecnd.net/temp/d635-5ailecdks1e.jpg";
+    var statify = function (ex, subj, indents) {
+      var cnt = $(ex).find('.cnt');
+      var c = new containerCtor(cnt[0]);
+
+      if (subj) {
+        c = new containerCtor(subj);
+      }
+
+      if (!indents)
+        indents = 0;
+
+      indents = indents * 10;
+      ex.find('.info')
+        .append($("<pre>").text("container: " + c.getContainerPositioning().toString())
+          .css("margin-left", indents + "px"))
+        .append($("<pre>").text("child: " + c.getChildPositioning().toString())
+          .css("margin-left", indents + "px"))
+    };
+
+
+    (function (container, statify) {
+      var img = new containerCtor();
+
+      // ensure the ui container element has static width/height
+      var containerEl = $(container).find('.cnt')[0];
+      containerEl.style.width = "600px";
+      containerEl.style.height = "450px";
+
+      // pass into the template mapper the single template data
+      // straight from the API
+      template = apiData.Options[0];
+      var tdata = templateMapper.toContainerData({
+        template: template
+      });
+
+      // get the template mapper's first space
+      // of course in live we'd have separate images for each space
+      var mappedSingleSpace = tdata.spaces[0];
+
+      // creation of the GTN.ui.Container instance
+      // be sure to have the CSS classes in the header of this doc that are like ncz-* !
+      img.addChild(containerEl, mappedSingleSpace, function (finalData) {
+        // add the user's image into the container
+        // note that we *could* pass in previous image dimensions
+        // so that the user starts where they left off
+        // -- see the reconstitute examples below for that
+        simpleImpl.addImage(tdata, finalData, null, {url: url_live}, function () {
+
+          // reconstitute example!
+          // here we pass in the EXACT IL we get from the
+          // exportStrategies.containerToIL() function
+          // (this would be exportStrategies.containerToIL().print.layers[0])
+          $('.js-reconstitute').click(function () {
+            var prev = {
+              url: url600w400h,
+              "left": -756.0005600004148,
+              "top": -952.0007051857075,
+              "height": 7854.677818279865,
+              "width": 11782.002727409428,
+              "rotation": 0
+            };
+            simpleImpl.addImage(tdata, finalData, null, prev, function (fd1, acc1) {
+            });
+
+          });
+
+          // imgmanip generation
+          // here we pass in the EXACT IL we get from the
+          // exportStrategies.containerToIL() function
+          $('.js-imgmanip').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+            var cmdObj = fns.ILToImgManip(il.print);
+
+            $('.manips').html("").append(
+              $("<pre />")
+                .append(JSON.stringify(cmdObj, null, 2))
+            );
+
+          });
+
+          // imgmanip product preview generation
+          // here we pass in the EXACT IL we get from the
+          // exportStrategies.containerToIL() function
+          $('.js-pimgmanip').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+
+            // note that we pass the preview IL in, and we set the flag to true
+            var cmdObj = fns.ILToImgManip(il.preview, true);
+
+            $('.manips').html("").append(
+              $("<pre />")
+                .append(JSON.stringify(cmdObj, null, 2))
+            );
+
+          });
+
+          // create a html5 canvas preview!
+          // super easy-- just pass in either il.preview or il.print
+          // (admin probly will always be preview)
+          $('.js-canvas').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+            il.preview.maxWidth = 100;
+            il.print.maxWidth = 100;
+
+            console.log(il);
+
+            var cmdObj = fns.ILToCanvas(il.preview, function (canvas) {
+
+              var imageData = canvas.toDataURL("image/jpeg");
+              var image = document.createElement('img');
+              image.src = imageData;
+
+
+              $('.canvases').append(
+                image
+              );
+
+            });
+
+            var cmdObj2 = fns.ILToCanvas(il.print, function (canvas) {
+
+              var imageData = canvas.toDataURL("image/jpeg");
+              var image = document.createElement('img');
+              image.src = imageData;
+
+
+              $('.canvases').append(
+                image
+              );
+
+            });
+          });
+
+          // want to see what IL looks like?
+          $('.js-il').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+
+            $('.manips').html("").append(
+              $("<pre />")
+                .append(JSON.stringify(il, null, 2))
+            );
+
+          });
+
+
+          $('.js-reconstitute2').click(function () {
+            var prev = {
+              url: url600w400h,
+              "left": -3766.002789631696,
+              "top": -1932.001431112171,
+              "height": 7854.677818279865,
+              "width": 11782.016727419797,
+              "rotation": 0
+            };
+            simpleImpl.addImage(tdata, finalData, null, prev, function (fd1, acc1) {
+            });
+
+          });
+
+          $('.js-reconstitute3').click(function () {
+            var prev = {
+              url: url600w400h,
+              "left": -111.99308295783939,
+              "top": -5729.679244206847,
+              "height": 11782.030727430167,
+              "width": 7854.677818279865,
+              "rotation": 90
+            };
+            simpleImpl.addImage(tdata, finalData, null, prev, function (fd1, acc1) {
+            });
+
+          });
+        });
+
+        statify(container, 0);
+        statify(container, containerEl.children[0], 1);
+        statify(container, containerEl.children[1], 1);
+
+
+      });
+
+
+    }($("#tldr"), statify));
+
+
+  })
+  ;
+</script>
+</body>
+
+</html>

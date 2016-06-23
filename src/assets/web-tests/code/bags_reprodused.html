@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>editor3 testing</title>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .example {
+      margin-bottom: 40px;
+    }
+
+    .cnt {
+      border: 1px dashed red;
+      position: relative;
+    }
+
+    .blue-dot {
+      border: 1px dashed blue;
+    }
+
+    .green-dot {
+      border: 1px dashed green;
+    }
+
+    .pos {
+      border-right: 1px dotted red;
+      border-bottom: 1px dotted blue;
+      border-left: 1px dotted yellow;
+      border-top: 1px dotted gray;
+    }
+
+    .ctrls {
+      display: block;
+      position: absolute;
+      margin: auto;
+      padding: 0;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      width: 68px;
+    }
+
+    .ctrls-move {
+      display: inline-block;
+      background: red;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ctrls-rotate {
+      display: inline-block;
+      background: blue;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ctrls-scale {
+      display: inline-block;
+      background: turquoise;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ncz-overlay-layer {
+      pointer-events: none;
+
+    }
+
+    .ncz-image-layer {
+      cursor: -webkit-grab;
+      cursor: grab;
+    }
+
+    .ncz-image-layer:active {
+      cursor: -webkit-grabbing;
+      cursor: grabbing;
+    }
+
+    pre {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="example" id="tldr">
+      <h4>tl;dr;</h4>
+      <p>can do everything</p>
+      <div class="cnt"></div>
+      <br/>
+      <div>
+        <input type="range" min=".01" max="10" id="zoom"/>
+      </div>
+      <br/>
+      <div class="buttons">
+        <button class="btn js-rotate">Rotate Container</button>
+        <button class="btn js-imgmanip">Get Manip</button>
+        <button class="btn js-pimgmanip">Get Preview Manip</button>
+        <button class="btn js-il">Get IL</button>
+        <button class="btn js-canvas">Canvas Gen</button>
+        <button class="btn js-reconstitute">Reconstitute</button>
+        <button class="btn js-reconstitute2">Reconstitute2</button>
+        <button class="btn js-reconstitute3">Reconstitute3</button>
+      </div>
+      <br />
+      <div class="canvases clearfix"></div>
+      <div class="manips"></div>
+      <div class="live-info"></div>
+      <div class="info"></div>
+    </div>
+
+
+    <br/>
+    <br/>
+
+
+  </div>
+  <div class="row">
+    <div id="embedder"></div>
+  </div>
+</div>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="https://cdn.rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="../../assets/js/core/lib/knockout-2.2.0.js"></script>
+<script src="../../assets/js/core/lib/lo-dash-1.2.0.js"></script>
+<script src="../../assets/js/core/src/GTN.namespace.js"></script>
+<script src="../../assets/js/core/src/GTN.util.js"></script>
+<script src="../../assets/js/core/src/GTN.util.di.js"></script>
+<script src="../../assets/js/core/src/GTN.util.di.init.js"></script>
+<script src="../../assets/js/core/src/GTN.models.positioning.js"></script>
+<script src="../../assets/js/core/src/GTN.models.position.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.getcommitstate.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.violationstrategy.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.suggestedtransform.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdater.js"></script>
+<script src="../../assets/js/core/src/GTN.models.perspective.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.container.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.containerfns.exportstrategies.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.containerfns.simpleimpl.js"></script>
+<script src="../../assets/js/core/src/GTN.services.templatemapper.js"></script>
+
+
+<script>
+
+  $(function () {
+
+    var containerCtor = GTN.util.di.get("GTN.ui.Container");
+    var simpleImpl = GTN.util.di.get("GTN.ui.containerFns.simpleImpl");
+    var exportStrategies = GTN.util.di.get("GTN.ui.containerFns.exportStrategies");
+    var templateMapper = GTN.util.di.get("GTN.services.templateMapper");
+
+    var url600w400h = "http://cdn.print.io/temp/600w400h2.png";
+    var url400w600h = "http://cdn.print.io/temp/400w600h2.png";
+    var url150wx100h = "https://s3-us-west-2.amazonaws.com/gooten-assets/testing/test-img.png";
+    var url_live = "http://az504546.vo.msecnd.net/temp/d635-5ailecdks1e.jpg";
+
+    var template = {
+      "Spaces": [
+        {
+          "Id": "F190F",
+          "Index": 1,
+          "FinalX1": 450,
+          "FinalX2": 7650,
+          "FinalY1": 450,
+          "FinalY2": 5850,
+          "Layers": [
+            {
+              "Id": "7F61C",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 8100,
+              "Y1": 0,
+              "Y2": 6300,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-canvaswraps/CanvasWrap18x24-Black-Background.png",
+              "IncludeInPrint": false
+            },
+            {
+              "Id": "8A04B",
+              "Type": "Image",
+              "ZIndex": 1,
+              "X1": 450,
+              "X2": 7650,
+              "Y1": 450,
+              "Y2": 5850
+            },
+            {
+              "Id": "040B2",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 8100,
+              "Y1": 0,
+              "Y2": 6300,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-canvaswraps/CanvasWrap18x24-OverlayBlackv4.png",
+              "IncludeInPrint": false
+            }
+          ]
+        }
+      ],
+      "Name": "Single",
+      "ImageUrl": "http://app-imgs.print.io/product-canvaswraps/RectangleSingleImageA.png",
+      "IsDefault": true
+    };
+
+    var shirtTemplate = {
+      "Spaces": [
+        {
+          "Id": "C1B69",
+          "Index": 1,
+          "FinalX1": 2589,
+          "FinalX2": 7089,
+          "FinalY1": 1603,
+          "FinalY2": 7303,
+          "DefaultRotation": 0,
+          "Description": "Front",
+          "Layers": [
+            {
+              "Id": "90106",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 9340,
+              "Y1": 0,
+              "Y2": 11010,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Background/Front/DT6000_Black_Background_Front.png",
+              "IncludeInPrint": false
+            },
+            {
+              "Id": "F52EB",
+              "Type": "Image",
+              "ZIndex": 1,
+              "X1": 2589,
+              "X2": 7089,
+              "Y1": 1603,
+              "Y2": 7303,
+              "ImageFill": "CanFill",
+              "IncludeInPrint": true
+            },
+            {
+              "Id": "DD7A1",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 9340,
+              "Y1": 0,
+              "Y2": 11010,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Overlay/Front/DT6000_Black_Front_Overlay.png",
+              "IncludeInPrint": false
+            }
+          ]
+        }
+      ]
+    };
+
+    var acrylicTemplate = {
+      "Spaces": [
+        {
+          "Id": "56785",
+          "Index": 1,
+          "Layers": [
+            {
+              "Id": "7698E",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 2138,
+              "Y1": 0,
+              "Y2": 1538,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-acrylicblocks/AcrylBlockBack_5x7v2.png",
+              "IncludeInPrint": false
+            },
+            {
+              "Id": "D687E",
+              "Type": "Image",
+              "ZIndex": 1,
+              "X1": 0,
+              "X2": 2138,
+              "Y1": 0,
+              "Y2": 1538
+            },
+            {
+              "Id": "0C3C4",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 2138,
+              "Y1": 0,
+              "Y2": 1538,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-acrylicblocks/AcrylicBlockOverlay_5x7v2.png",
+              "IncludeInPrint": false
+            }
+          ]
+        }
+      ],
+      "Name": "Single",
+      "ImageUrl": "http://app-imgs.print.io/product-acrylicblocks/RectangleSingle.png",
+      "IsDefault": true
+    };
+
+
+    var bagTemplate = {
+      "Spaces": [
+        {
+          "Id": "6C777", "Index": 1, "Description": "Left side",
+          "Layers": [
+            {
+              "Id": "C7279",
+              "Type": "Design",
+              "ZIndex": 0,
+              "X1": 0,
+              "X2": 2100,
+              "Y1": 0,
+              "Y2": 1425,
+              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85-Backgroundv3.png",
+              "IncludeInPrint": false
+            },
+            {"Id": "0CDA7", "Type": "Image", "ZIndex": 1, "X1": 0, "X2": 2100, "Y1": 0, "Y2": 1425},
+            {
+              "Id": "5E48F", "Type": "Design", "ZIndex": 2, "X1": 0, "X2": 2100, "Y1": 0, "Y2": 1425,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85Tbottom-Overlayv5.png",
+              "IncludeInPrint": false
+            }]
+        }, {
+          "Id": "A0684", "Index": 2, "Description": "Right side",
+          "Layers": [{
+            "Id": "72799C",
+            "Type": "Design",
+            "ZIndex": 0,
+            "X1": 0,
+            "X2": 2100,
+            "Y1": 0,
+            "Y2": 1425,
+            "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85-Backgroundv3.png",
+            "IncludeInPrint": false
+          },
+            {"Id": "CDA731", "Type": "Image", "ZIndex": 1, "X1": 0, "X2": 2100, "Y1": 0, "Y2": 1425},
+            {
+              "Id": "E48F94",
+              "Type": "Design",
+              "ZIndex": 2,
+              "X1": 0,
+              "X2": 2100,
+              "Y1": 0,
+              "Y2": 1425,
+              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-accessorypouches/AccessoryPouch125x85Tbottom-Overlayv5.png",
+              "IncludeInPrint": false
+            }]
+        }],
+      "Name": "Single",
+      "ImageUrl": "http://app-imgs.print.io/product-accessorypouches/AccessoryPouch125x85Tbottom-Icon.png",
+      "IsDefault": true
+    };
+
+    var apiData = {"Options":[{"Spaces":[{"Id":"21336","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":false},{"Id":"0808D","Type":"Image","ZIndex":1,"X1":0,"X2":2925,"Y1":1869,"Y2":4794},{"Id":"19281","Type":"Design","ZIndex":2,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"41C10","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":false},{"Id":"808DFF","Type":"Image","ZIndex":1,"X1":0,"X2":2925,"Y1":1869,"Y2":4794},{"Id":"928107","Type":"Design","ZIndex":2,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"Single","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-SquareSingle.png","IsDefault":true},{"Spaces":[{"Id":"DAC61","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"8F2A6","Type":"Image","ZIndex":1,"X1":68,"X2":952,"Y1":1937,"Y2":3773},{"Id":"DD378","Type":"Image","ZIndex":2,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"1E4B4","Type":"Image","ZIndex":3,"X1":1020,"X2":2857,"Y1":1937,"Y2":4726},{"Id":"CBEFF","Type":"Design","ZIndex":4,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"6B389","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"F2A682","Type":"Image","ZIndex":1,"X1":68,"X2":952,"Y1":1937,"Y2":3773},{"Id":"D378EA","Type":"Image","ZIndex":2,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"E4B4BB","Type":"Image","ZIndex":3,"X1":1020,"X2":2857,"Y1":1937,"Y2":4726},{"Id":"BEFF9B","Type":"Design","ZIndex":4,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"3x3_3_MainRight","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square3x3_3_Right.png","IsDefault":false},{"Spaces":[{"Id":"B9BEA","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"A3AF2","Type":"Image","ZIndex":1,"X1":68,"X2":1904,"Y1":1937,"Y2":4726},{"Id":"B3E12","Type":"Image","ZIndex":2,"X1":1972,"X2":2857,"Y1":1937,"Y2":3773},{"Id":"C5376","Type":"Image","ZIndex":3,"X1":1972,"X2":2857,"Y1":3841,"Y2":4726},{"Id":"CBEFF","Type":"Design","ZIndex":4,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"8994C","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"3AF274","Type":"Image","ZIndex":1,"X1":68,"X2":1904,"Y1":1937,"Y2":4726},{"Id":"3E12FF","Type":"Image","ZIndex":2,"X1":1972,"X2":2857,"Y1":1937,"Y2":3773},{"Id":"537665","Type":"Image","ZIndex":3,"X1":1972,"X2":2857,"Y1":3841,"Y2":4726},{"Id":"BEFF9B","Type":"Design","ZIndex":4,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"3x3_3_MainLeft","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square3x3_3_Left.png","IsDefault":false},{"Spaces":[{"Id":"FCDA2","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"35874","Type":"Image","ZIndex":1,"X1":1020,"X2":2857,"Y1":1937,"Y2":4726},{"Id":"1E9EE","Type":"Image","ZIndex":2,"X1":68,"X2":952,"Y1":1937,"Y2":2821},{"Id":"FB203","Type":"Image","ZIndex":3,"X1":68,"X2":952,"Y1":2889,"Y2":3773},{"Id":"B4A0A","Type":"Image","ZIndex":4,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"B9936","Type":"Design","ZIndex":5,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"232FE","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"5874A8","Type":"Image","ZIndex":1,"X1":1020,"X2":2857,"Y1":1937,"Y2":4726},{"Id":"E9EE9D","Type":"Image","ZIndex":2,"X1":68,"X2":952,"Y1":1937,"Y2":2821},{"Id":"B2032D","Type":"Image","ZIndex":3,"X1":68,"X2":952,"Y1":2889,"Y2":3773},{"Id":"4A0A37","Type":"Image","ZIndex":4,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"99367F","Type":"Design","ZIndex":5,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"3x3_4_MainRight","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square3x3_4_Right.png","IsDefault":false},{"Spaces":[{"Id":"B739C","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"AC494","Type":"Image","ZIndex":1,"X1":68,"X2":2857,"Y1":1937,"Y2":4011},{"Id":"59757","Type":"Image","ZIndex":2,"X1":68,"X2":714,"Y1":4079,"Y2":4726},{"Id":"1F331","Type":"Image","ZIndex":3,"X1":782,"X2":1428,"Y1":4079,"Y2":4726},{"Id":"368EC","Type":"Image","ZIndex":4,"X1":1496,"X2":2142,"Y1":4079,"Y2":4726},{"Id":"57B38","Type":"Image","ZIndex":5,"X1":2210,"X2":2857,"Y1":4079,"Y2":4726},{"Id":"CA8D8","Type":"Design","ZIndex":6,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"79D97","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"C494F8","Type":"Image","ZIndex":1,"X1":68,"X2":2857,"Y1":1937,"Y2":4011},{"Id":"9757AC","Type":"Image","ZIndex":2,"X1":68,"X2":714,"Y1":4079,"Y2":4726},{"Id":"F3317F","Type":"Image","ZIndex":3,"X1":782,"X2":1428,"Y1":4079,"Y2":4726},{"Id":"68EC15","Type":"Image","ZIndex":4,"X1":1496,"X2":2142,"Y1":4079,"Y2":4726},{"Id":"7B38A5","Type":"Image","ZIndex":5,"X1":2210,"X2":2857,"Y1":4079,"Y2":4726},{"Id":"A8D82C","Type":"Design","ZIndex":6,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"4x4_5_Top","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square4x4_5_Top.png","IsDefault":false},{"Spaces":[{"Id":"01F79","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"70A72","Type":"Image","ZIndex":1,"X1":1020,"X2":2857,"Y1":1937,"Y2":3773},{"Id":"1E9EE","Type":"Image","ZIndex":2,"X1":68,"X2":952,"Y1":1937,"Y2":2821},{"Id":"FB203","Type":"Image","ZIndex":3,"X1":68,"X2":952,"Y1":2889,"Y2":3773},{"Id":"EF4D1","Type":"Image","ZIndex":4,"X1":1972,"X2":2857,"Y1":3841,"Y2":4726},{"Id":"74358","Type":"Image","ZIndex":5,"X1":1020,"X2":1904,"Y1":3841,"Y2":4726},{"Id":"96373","Type":"Image","ZIndex":6,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"D02D0","Type":"Design","ZIndex":7,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"34A65","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"0A72BD","Type":"Image","ZIndex":1,"X1":1020,"X2":2857,"Y1":1937,"Y2":3773},{"Id":"E9EE9D","Type":"Image","ZIndex":2,"X1":68,"X2":952,"Y1":1937,"Y2":2821},{"Id":"B2032D","Type":"Image","ZIndex":3,"X1":68,"X2":952,"Y1":2889,"Y2":3773},{"Id":"F4D1EA","Type":"Image","ZIndex":4,"X1":1972,"X2":2857,"Y1":3841,"Y2":4726},{"Id":"435859","Type":"Image","ZIndex":5,"X1":1020,"X2":1904,"Y1":3841,"Y2":4726},{"Id":"637374","Type":"Image","ZIndex":6,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"02D005","Type":"Design","ZIndex":7,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"3x3_6_MainRight","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square3x3_6_Right.png","IsDefault":false},{"Spaces":[{"Id":"2EC90","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"C7DEF","Type":"Image","ZIndex":1,"X1":68,"X2":1904,"Y1":1937,"Y2":3773},{"Id":"8BF69","Type":"Image","ZIndex":2,"X1":1972,"X2":2857,"Y1":1937,"Y2":2821},{"Id":"5D678","Type":"Image","ZIndex":3,"X1":1972,"X2":2857,"Y1":2889,"Y2":3773},{"Id":"EF4D1","Type":"Image","ZIndex":4,"X1":1972,"X2":2857,"Y1":3841,"Y2":4726},{"Id":"74358","Type":"Image","ZIndex":5,"X1":1020,"X2":1904,"Y1":3841,"Y2":4726},{"Id":"96373","Type":"Image","ZIndex":6,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"D02D0","Type":"Design","ZIndex":7,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"8D974","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"7DEF5C","Type":"Image","ZIndex":1,"X1":68,"X2":1904,"Y1":1937,"Y2":3773},{"Id":"BF6973","Type":"Image","ZIndex":2,"X1":1972,"X2":2857,"Y1":1937,"Y2":2821},{"Id":"D67894","Type":"Image","ZIndex":3,"X1":1972,"X2":2857,"Y1":2889,"Y2":3773},{"Id":"F4D1EA","Type":"Image","ZIndex":4,"X1":1972,"X2":2857,"Y1":3841,"Y2":4726},{"Id":"435859","Type":"Image","ZIndex":5,"X1":1020,"X2":1904,"Y1":3841,"Y2":4726},{"Id":"637374","Type":"Image","ZIndex":6,"X1":68,"X2":952,"Y1":3841,"Y2":4726},{"Id":"02D005","Type":"Design","ZIndex":7,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"3x3_6_MainLeft","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square3x3_6_Left.png","IsDefault":false},{"Spaces":[{"Id":"90990","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":false},{"Id":"2BE5D","Type":"Image","ZIndex":1,"X1":0,"X2":975,"Y1":1869,"Y2":2844},{"Id":"3BB83","Type":"Image","ZIndex":2,"X1":975,"X2":1950,"Y1":1869,"Y2":2844},{"Id":"02382","Type":"Image","ZIndex":3,"X1":1950,"X2":2925,"Y1":1869,"Y2":2844},{"Id":"4AC6B","Type":"Image","ZIndex":4,"X1":0,"X2":975,"Y1":2844,"Y2":3819},{"Id":"0F423","Type":"Image","ZIndex":5,"X1":975,"X2":1950,"Y1":2844,"Y2":3819},{"Id":"E30AB","Type":"Image","ZIndex":6,"X1":1950,"X2":2925,"Y1":2844,"Y2":3819},{"Id":"2322E","Type":"Image","ZIndex":7,"X1":0,"X2":975,"Y1":3819,"Y2":4794},{"Id":"1A45B","Type":"Image","ZIndex":8,"X1":975,"X2":1950,"Y1":3819,"Y2":4794},{"Id":"8ED91","Type":"Image","ZIndex":9,"X1":1950,"X2":2925,"Y1":3819,"Y2":4794},{"Id":"CB543","Type":"Design","ZIndex":10,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"475AE","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":false},{"Id":"BE5DBF","Type":"Image","ZIndex":1,"X1":0,"X2":975,"Y1":1869,"Y2":2844},{"Id":"BB83C1","Type":"Image","ZIndex":2,"X1":975,"X2":1950,"Y1":1869,"Y2":2844},{"Id":"2382AC","Type":"Image","ZIndex":3,"X1":1950,"X2":2925,"Y1":1869,"Y2":2844},{"Id":"AC6B65","Type":"Image","ZIndex":4,"X1":0,"X2":975,"Y1":2844,"Y2":3819},{"Id":"F4230E","Type":"Image","ZIndex":5,"X1":975,"X2":1950,"Y1":2844,"Y2":3819},{"Id":"30ABD4","Type":"Image","ZIndex":6,"X1":1950,"X2":2925,"Y1":2844,"Y2":3819},{"Id":"322E67","Type":"Image","ZIndex":7,"X1":0,"X2":975,"Y1":3819,"Y2":4794},{"Id":"A45BA9","Type":"Image","ZIndex":8,"X1":975,"X2":1950,"Y1":3819,"Y2":4794},{"Id":"ED91A2","Type":"Image","ZIndex":9,"X1":1950,"X2":2925,"Y1":3819,"Y2":4794},{"Id":"B54311","Type":"Design","ZIndex":10,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"3x3","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square3x3.png","IsDefault":false},{"Spaces":[{"Id":"B4FC8","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"689A9","Type":"Image","ZIndex":1,"X1":68,"X2":714,"Y1":1937,"Y2":2583},{"Id":"8655E","Type":"Image","ZIndex":2,"X1":782,"X2":1428,"Y1":1937,"Y2":2583},{"Id":"87BC2","Type":"Image","ZIndex":3,"X1":1496,"X2":2142,"Y1":1937,"Y2":2583},{"Id":"E5E98","Type":"Image","ZIndex":4,"X1":2210,"X2":2857,"Y1":1937,"Y2":2583},{"Id":"F9C36","Type":"Image","ZIndex":5,"X1":68,"X2":714,"Y1":2651,"Y2":3297},{"Id":"45C55","Type":"Image","ZIndex":6,"X1":2210,"X2":2857,"Y1":2651,"Y2":3297},{"Id":"A14D1","Type":"Image","ZIndex":7,"X1":68,"X2":714,"Y1":3365,"Y2":4011},{"Id":"91CA0","Type":"Image","ZIndex":8,"X1":2210,"X2":2857,"Y1":3365,"Y2":4011},{"Id":"44DBA","Type":"Image","ZIndex":9,"X1":68,"X2":714,"Y1":4079,"Y2":4726},{"Id":"41A35","Type":"Image","ZIndex":10,"X1":782,"X2":1428,"Y1":4079,"Y2":4726},{"Id":"B1B67","Type":"Image","ZIndex":11,"X1":1496,"X2":2142,"Y1":4079,"Y2":4726},{"Id":"C258B","Type":"Image","ZIndex":12,"X1":2210,"X2":2857,"Y1":4079,"Y2":4726},{"Id":"6D8B9","Type":"Image","ZIndex":13,"X1":782,"X2":2142,"Y1":2651,"Y2":4011},{"Id":"4461B","Type":"Design","ZIndex":14,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"C9BB7","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"89A95A","Type":"Image","ZIndex":1,"X1":68,"X2":714,"Y1":1937,"Y2":2583},{"Id":"655EB8","Type":"Image","ZIndex":2,"X1":782,"X2":1428,"Y1":1937,"Y2":2583},{"Id":"7BC215","Type":"Image","ZIndex":3,"X1":1496,"X2":2142,"Y1":1937,"Y2":2583},{"Id":"5E9867","Type":"Image","ZIndex":4,"X1":2210,"X2":2857,"Y1":1937,"Y2":2583},{"Id":"9C36C2","Type":"Image","ZIndex":5,"X1":68,"X2":714,"Y1":2651,"Y2":3297},{"Id":"5C550A","Type":"Image","ZIndex":6,"X1":2210,"X2":2857,"Y1":2651,"Y2":3297},{"Id":"14D172","Type":"Image","ZIndex":7,"X1":68,"X2":714,"Y1":3365,"Y2":4011},{"Id":"1CA0FC","Type":"Image","ZIndex":8,"X1":2210,"X2":2857,"Y1":3365,"Y2":4011},{"Id":"4DBA6B","Type":"Image","ZIndex":9,"X1":68,"X2":714,"Y1":4079,"Y2":4726},{"Id":"1A35B1","Type":"Image","ZIndex":10,"X1":782,"X2":1428,"Y1":4079,"Y2":4726},{"Id":"1B67D9","Type":"Image","ZIndex":11,"X1":1496,"X2":2142,"Y1":4079,"Y2":4726},{"Id":"258B60","Type":"Image","ZIndex":12,"X1":2210,"X2":2857,"Y1":4079,"Y2":4726},{"Id":"D8B937","Type":"Image","ZIndex":13,"X1":782,"X2":2142,"Y1":2651,"Y2":4011},{"Id":"461B29","Type":"Design","ZIndex":14,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"4x4_13_Middle","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square4x4_13_Middle.png","IsDefault":false},{"Spaces":[{"Id":"E7AED","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":false},{"Id":"E5376","Type":"Image","ZIndex":1,"X1":0,"X2":731,"Y1":1869,"Y2":2600},{"Id":"A4997","Type":"Image","ZIndex":2,"X1":731,"X2":1462,"Y1":1869,"Y2":2600},{"Id":"A7C07","Type":"Image","ZIndex":3,"X1":1462,"X2":2193,"Y1":1869,"Y2":2600},{"Id":"ACEC3","Type":"Image","ZIndex":4,"X1":2193,"X2":2925,"Y1":1869,"Y2":2600},{"Id":"61EF2","Type":"Image","ZIndex":5,"X1":0,"X2":731,"Y1":2600,"Y2":3331},{"Id":"8F49B","Type":"Image","ZIndex":6,"X1":731,"X2":1462,"Y1":2600,"Y2":3331},{"Id":"BA1D9","Type":"Image","ZIndex":7,"X1":1462,"X2":2193,"Y1":2600,"Y2":3331},{"Id":"64B35","Type":"Image","ZIndex":8,"X1":2193,"X2":2925,"Y1":2600,"Y2":3331},{"Id":"EBCAA","Type":"Image","ZIndex":9,"X1":0,"X2":731,"Y1":3331,"Y2":4062},{"Id":"71FD5","Type":"Image","ZIndex":10,"X1":731,"X2":1462,"Y1":3331,"Y2":4062},{"Id":"C6C1D","Type":"Image","ZIndex":11,"X1":1462,"X2":2193,"Y1":3331,"Y2":4062},{"Id":"94A12","Type":"Image","ZIndex":12,"X1":2193,"X2":2925,"Y1":3331,"Y2":4062},{"Id":"E2F9E","Type":"Image","ZIndex":13,"X1":0,"X2":731,"Y1":4062,"Y2":4794},{"Id":"6DF75","Type":"Image","ZIndex":14,"X1":731,"X2":1462,"Y1":4062,"Y2":4794},{"Id":"34312","Type":"Image","ZIndex":15,"X1":1462,"X2":2193,"Y1":4062,"Y2":4794},{"Id":"F6577","Type":"Image","ZIndex":16,"X1":2193,"X2":2925,"Y1":4062,"Y2":4794},{"Id":"AB8D7","Type":"Design","ZIndex":17,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"707F7","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":false},{"Id":"5376EB","Type":"Image","ZIndex":1,"X1":0,"X2":731,"Y1":1869,"Y2":2600},{"Id":"499799","Type":"Image","ZIndex":2,"X1":731,"X2":1462,"Y1":1869,"Y2":2600},{"Id":"7C07A6","Type":"Image","ZIndex":3,"X1":1462,"X2":2193,"Y1":1869,"Y2":2600},{"Id":"CEC3B6","Type":"Image","ZIndex":4,"X1":2193,"X2":2925,"Y1":1869,"Y2":2600},{"Id":"1EF27F","Type":"Image","ZIndex":5,"X1":0,"X2":731,"Y1":2600,"Y2":3331},{"Id":"F49B41","Type":"Image","ZIndex":6,"X1":731,"X2":1462,"Y1":2600,"Y2":3331},{"Id":"A1D9C1","Type":"Image","ZIndex":7,"X1":1462,"X2":2193,"Y1":2600,"Y2":3331},{"Id":"4B359D","Type":"Image","ZIndex":8,"X1":2193,"X2":2925,"Y1":2600,"Y2":3331},{"Id":"BCAAFD","Type":"Image","ZIndex":9,"X1":0,"X2":731,"Y1":3331,"Y2":4062},{"Id":"1FD5E0","Type":"Image","ZIndex":10,"X1":731,"X2":1462,"Y1":3331,"Y2":4062},{"Id":"6C1D4B","Type":"Image","ZIndex":11,"X1":1462,"X2":2193,"Y1":3331,"Y2":4062},{"Id":"4A1232","Type":"Image","ZIndex":12,"X1":2193,"X2":2925,"Y1":3331,"Y2":4062},{"Id":"2F9EE6","Type":"Image","ZIndex":13,"X1":0,"X2":731,"Y1":4062,"Y2":4794},{"Id":"DF7537","Type":"Image","ZIndex":14,"X1":731,"X2":1462,"Y1":4062,"Y2":4794},{"Id":"4312F0","Type":"Image","ZIndex":15,"X1":1462,"X2":2193,"Y1":4062,"Y2":4794},{"Id":"6577D2","Type":"Image","ZIndex":16,"X1":2193,"X2":2925,"Y1":4062,"Y2":4794},{"Id":"B8D722","Type":"Design","ZIndex":17,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"4x4","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square4x4.png","IsDefault":false},{"Spaces":[{"Id":"E3F48","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"689A9","Type":"Image","ZIndex":1,"X1":68,"X2":714,"Y1":1937,"Y2":2583},{"Id":"8655E","Type":"Image","ZIndex":2,"X1":782,"X2":1428,"Y1":1937,"Y2":2583},{"Id":"87BC2","Type":"Image","ZIndex":3,"X1":1496,"X2":2142,"Y1":1937,"Y2":2583},{"Id":"E5E98","Type":"Image","ZIndex":4,"X1":2210,"X2":2857,"Y1":1937,"Y2":2583},{"Id":"F9C36","Type":"Image","ZIndex":5,"X1":68,"X2":714,"Y1":2651,"Y2":3297},{"Id":"3028E","Type":"Image","ZIndex":6,"X1":782,"X2":1428,"Y1":2651,"Y2":3297},{"Id":"08CF2","Type":"Image","ZIndex":7,"X1":1496,"X2":2142,"Y1":2651,"Y2":3297},{"Id":"7A80E","Type":"Image","ZIndex":8,"X1":2210,"X2":2857,"Y1":2651,"Y2":3297},{"Id":"6D079","Type":"Image","ZIndex":9,"X1":68,"X2":714,"Y1":3365,"Y2":4011},{"Id":"512F0","Type":"Image","ZIndex":10,"X1":782,"X2":1428,"Y1":3365,"Y2":4011},{"Id":"D08F9","Type":"Image","ZIndex":11,"X1":1496,"X2":2142,"Y1":3365,"Y2":4011},{"Id":"26F3C","Type":"Image","ZIndex":12,"X1":2210,"X2":2857,"Y1":3365,"Y2":4011},{"Id":"762FE","Type":"Image","ZIndex":13,"X1":68,"X2":714,"Y1":4079,"Y2":4726},{"Id":"AF023","Type":"Image","ZIndex":14,"X1":782,"X2":1428,"Y1":4079,"Y2":4726},{"Id":"E5359","Type":"Image","ZIndex":15,"X1":1496,"X2":2142,"Y1":4079,"Y2":4726},{"Id":"A7E77","Type":"Image","ZIndex":16,"X1":2210,"X2":2857,"Y1":4079,"Y2":4726},{"Id":"AB8D7","Type":"Design","ZIndex":17,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"8D75C","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"89A95A","Type":"Image","ZIndex":1,"X1":68,"X2":714,"Y1":1937,"Y2":2583},{"Id":"655EB8","Type":"Image","ZIndex":2,"X1":782,"X2":1428,"Y1":1937,"Y2":2583},{"Id":"7BC215","Type":"Image","ZIndex":3,"X1":1496,"X2":2142,"Y1":1937,"Y2":2583},{"Id":"5E9867","Type":"Image","ZIndex":4,"X1":2210,"X2":2857,"Y1":1937,"Y2":2583},{"Id":"9C36C2","Type":"Image","ZIndex":5,"X1":68,"X2":714,"Y1":2651,"Y2":3297},{"Id":"028EB2","Type":"Image","ZIndex":6,"X1":782,"X2":1428,"Y1":2651,"Y2":3297},{"Id":"8CF260","Type":"Image","ZIndex":7,"X1":1496,"X2":2142,"Y1":2651,"Y2":3297},{"Id":"A80E1E","Type":"Image","ZIndex":8,"X1":2210,"X2":2857,"Y1":2651,"Y2":3297},{"Id":"D07951","Type":"Image","ZIndex":9,"X1":68,"X2":714,"Y1":3365,"Y2":4011},{"Id":"12F0B3","Type":"Image","ZIndex":10,"X1":782,"X2":1428,"Y1":3365,"Y2":4011},{"Id":"08F936","Type":"Image","ZIndex":11,"X1":1496,"X2":2142,"Y1":3365,"Y2":4011},{"Id":"6F3C97","Type":"Image","ZIndex":12,"X1":2210,"X2":2857,"Y1":3365,"Y2":4011},{"Id":"62FEF5","Type":"Image","ZIndex":13,"X1":68,"X2":714,"Y1":4079,"Y2":4726},{"Id":"F02380","Type":"Image","ZIndex":14,"X1":782,"X2":1428,"Y1":4079,"Y2":4726},{"Id":"5359F1","Type":"Image","ZIndex":15,"X1":1496,"X2":2142,"Y1":4079,"Y2":4726},{"Id":"7E776F","Type":"Image","ZIndex":16,"X1":2210,"X2":2857,"Y1":4079,"Y2":4726},{"Id":"B8D722","Type":"Design","ZIndex":17,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"4x4_16","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square4x4_16.png","IsDefault":false},{"Spaces":[{"Id":"DE61D","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"49F03","Type":"Image","ZIndex":1,"X1":68,"X2":571,"Y1":1937,"Y2":2440},{"Id":"9DAE3","Type":"Image","ZIndex":2,"X1":639,"X2":1142,"Y1":1937,"Y2":2440},{"Id":"0C57D","Type":"Image","ZIndex":3,"X1":1210,"X2":1713,"Y1":1937,"Y2":2440},{"Id":"F60B2","Type":"Image","ZIndex":4,"X1":1781,"X2":2284,"Y1":1937,"Y2":2440},{"Id":"4CFA2","Type":"Image","ZIndex":5,"X1":2352,"X2":2857,"Y1":1937,"Y2":2440},{"Id":"00B35","Type":"Image","ZIndex":6,"X1":68,"X2":571,"Y1":2508,"Y2":3011},{"Id":"6F0B4","Type":"Image","ZIndex":7,"X1":639,"X2":1142,"Y1":2508,"Y2":3011},{"Id":"82349","Type":"Image","ZIndex":8,"X1":1210,"X2":1713,"Y1":2508,"Y2":3011},{"Id":"C8B0C","Type":"Image","ZIndex":9,"X1":1781,"X2":2284,"Y1":2508,"Y2":3011},{"Id":"C65BA","Type":"Image","ZIndex":10,"X1":2352,"X2":2857,"Y1":2508,"Y2":3011},{"Id":"6BB6B","Type":"Image","ZIndex":11,"X1":68,"X2":571,"Y1":3079,"Y2":3582},{"Id":"F437C","Type":"Image","ZIndex":12,"X1":639,"X2":1142,"Y1":3079,"Y2":3582},{"Id":"5EFE5","Type":"Image","ZIndex":13,"X1":1210,"X2":1713,"Y1":3079,"Y2":3582},{"Id":"34C2A","Type":"Image","ZIndex":14,"X1":1781,"X2":2284,"Y1":3079,"Y2":3582},{"Id":"FF202","Type":"Image","ZIndex":15,"X1":2352,"X2":2857,"Y1":3079,"Y2":3582},{"Id":"27BD8","Type":"Image","ZIndex":16,"X1":68,"X2":571,"Y1":3650,"Y2":4153},{"Id":"5D814","Type":"Image","ZIndex":17,"X1":639,"X2":1142,"Y1":3650,"Y2":4153},{"Id":"19822","Type":"Image","ZIndex":18,"X1":1210,"X2":1713,"Y1":3650,"Y2":4153},{"Id":"7E003","Type":"Image","ZIndex":19,"X1":1781,"X2":2284,"Y1":3650,"Y2":4153},{"Id":"C5154","Type":"Image","ZIndex":20,"X1":2352,"X2":2857,"Y1":3650,"Y2":4153},{"Id":"17402","Type":"Image","ZIndex":21,"X1":68,"X2":571,"Y1":4221,"Y2":4726},{"Id":"57035","Type":"Image","ZIndex":22,"X1":639,"X2":1142,"Y1":4221,"Y2":4726},{"Id":"E411C","Type":"Image","ZIndex":23,"X1":1210,"X2":1713,"Y1":4221,"Y2":4726},{"Id":"576DD","Type":"Image","ZIndex":24,"X1":1781,"X2":2284,"Y1":4221,"Y2":4726},{"Id":"CF249","Type":"Image","ZIndex":25,"X1":2352,"X2":2857,"Y1":4221,"Y2":4726},{"Id":"5A0AC","Type":"Design","ZIndex":26,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"0459E","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"9F039C","Type":"Image","ZIndex":1,"X1":68,"X2":571,"Y1":1937,"Y2":2440},{"Id":"DAE32B","Type":"Image","ZIndex":2,"X1":639,"X2":1142,"Y1":1937,"Y2":2440},{"Id":"C57DD4","Type":"Image","ZIndex":3,"X1":1210,"X2":1713,"Y1":1937,"Y2":2440},{"Id":"60B261","Type":"Image","ZIndex":4,"X1":1781,"X2":2284,"Y1":1937,"Y2":2440},{"Id":"CFA2AF","Type":"Image","ZIndex":5,"X1":2352,"X2":2857,"Y1":1937,"Y2":2440},{"Id":"0B35EA","Type":"Image","ZIndex":6,"X1":68,"X2":571,"Y1":2508,"Y2":3011},{"Id":"F0B4AC","Type":"Image","ZIndex":7,"X1":639,"X2":1142,"Y1":2508,"Y2":3011},{"Id":"23498B","Type":"Image","ZIndex":8,"X1":1210,"X2":1713,"Y1":2508,"Y2":3011},{"Id":"8B0C73","Type":"Image","ZIndex":9,"X1":1781,"X2":2284,"Y1":2508,"Y2":3011},{"Id":"65BAAF","Type":"Image","ZIndex":10,"X1":2352,"X2":2857,"Y1":2508,"Y2":3011},{"Id":"BB6BDE","Type":"Image","ZIndex":11,"X1":68,"X2":571,"Y1":3079,"Y2":3582},{"Id":"437CFB","Type":"Image","ZIndex":12,"X1":639,"X2":1142,"Y1":3079,"Y2":3582},{"Id":"EFE50D","Type":"Image","ZIndex":13,"X1":1210,"X2":1713,"Y1":3079,"Y2":3582},{"Id":"4C2AF2","Type":"Image","ZIndex":14,"X1":1781,"X2":2284,"Y1":3079,"Y2":3582},{"Id":"F20251","Type":"Image","ZIndex":15,"X1":2352,"X2":2857,"Y1":3079,"Y2":3582},{"Id":"7BD8D3","Type":"Image","ZIndex":16,"X1":68,"X2":571,"Y1":3650,"Y2":4153},{"Id":"D8149D","Type":"Image","ZIndex":17,"X1":639,"X2":1142,"Y1":3650,"Y2":4153},{"Id":"982223","Type":"Image","ZIndex":18,"X1":1210,"X2":1713,"Y1":3650,"Y2":4153},{"Id":"E00393","Type":"Image","ZIndex":19,"X1":1781,"X2":2284,"Y1":3650,"Y2":4153},{"Id":"515431","Type":"Image","ZIndex":20,"X1":2352,"X2":2857,"Y1":3650,"Y2":4153},{"Id":"7402E5","Type":"Image","ZIndex":21,"X1":68,"X2":571,"Y1":4221,"Y2":4726},{"Id":"7035F9","Type":"Image","ZIndex":22,"X1":639,"X2":1142,"Y1":4221,"Y2":4726},{"Id":"411C98","Type":"Image","ZIndex":23,"X1":1210,"X2":1713,"Y1":4221,"Y2":4726},{"Id":"76DDE0","Type":"Image","ZIndex":24,"X1":1781,"X2":2284,"Y1":4221,"Y2":4726},{"Id":"F249CA","Type":"Image","ZIndex":25,"X1":2352,"X2":2857,"Y1":4221,"Y2":4726},{"Id":"A0AC84","Type":"Design","ZIndex":26,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"5x5_25","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square5x5_25.png","IsDefault":false},{"Spaces":[{"Id":"94EB0","Index":1,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Front","Layers":[{"Id":"6072F","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"CE2DB","Type":"Image","ZIndex":1,"X1":68,"X2":476,"Y1":1937,"Y2":2345},{"Id":"A5DEE","Type":"Image","ZIndex":2,"X1":544,"X2":952,"Y1":1937,"Y2":2345},{"Id":"893E2","Type":"Image","ZIndex":3,"X1":1020,"X2":1428,"Y1":1937,"Y2":2345},{"Id":"B5C92","Type":"Image","ZIndex":4,"X1":1496,"X2":1904,"Y1":1937,"Y2":2345},{"Id":"95BFD","Type":"Image","ZIndex":5,"X1":1972,"X2":2380,"Y1":1937,"Y2":2345},{"Id":"87176","Type":"Image","ZIndex":6,"X1":2448,"X2":2857,"Y1":1937,"Y2":2345},{"Id":"F3D60","Type":"Image","ZIndex":7,"X1":68,"X2":476,"Y1":2413,"Y2":2821},{"Id":"61ACB","Type":"Image","ZIndex":8,"X1":544,"X2":952,"Y1":2413,"Y2":2821},{"Id":"EA8D9","Type":"Image","ZIndex":9,"X1":1020,"X2":1428,"Y1":2413,"Y2":2821},{"Id":"A61F9","Type":"Image","ZIndex":10,"X1":1496,"X2":1904,"Y1":2413,"Y2":2821},{"Id":"724B5","Type":"Image","ZIndex":11,"X1":1972,"X2":2380,"Y1":2413,"Y2":2821},{"Id":"B1C81","Type":"Image","ZIndex":12,"X1":2448,"X2":2857,"Y1":2413,"Y2":2821},{"Id":"B04C2","Type":"Image","ZIndex":13,"X1":68,"X2":476,"Y1":2889,"Y2":3297},{"Id":"06E5E","Type":"Image","ZIndex":14,"X1":544,"X2":952,"Y1":2889,"Y2":3297},{"Id":"E5541","Type":"Image","ZIndex":15,"X1":1020,"X2":1428,"Y1":2889,"Y2":3297},{"Id":"AD982","Type":"Image","ZIndex":16,"X1":1496,"X2":1904,"Y1":2889,"Y2":3297},{"Id":"85D91","Type":"Image","ZIndex":17,"X1":1972,"X2":2380,"Y1":2889,"Y2":3297},{"Id":"35796","Type":"Image","ZIndex":18,"X1":2448,"X2":2857,"Y1":2889,"Y2":3297},{"Id":"2C2FB","Type":"Image","ZIndex":19,"X1":68,"X2":476,"Y1":3365,"Y2":3773},{"Id":"2FC4D","Type":"Image","ZIndex":20,"X1":544,"X2":952,"Y1":3365,"Y2":3773},{"Id":"B8C00","Type":"Image","ZIndex":21,"X1":1020,"X2":1428,"Y1":3365,"Y2":3773},{"Id":"F5E07","Type":"Image","ZIndex":22,"X1":1496,"X2":1904,"Y1":3365,"Y2":3773},{"Id":"34CCE","Type":"Image","ZIndex":23,"X1":1972,"X2":2380,"Y1":3365,"Y2":3773},{"Id":"68308","Type":"Image","ZIndex":24,"X1":2448,"X2":2857,"Y1":3365,"Y2":3773},{"Id":"06C7F","Type":"Image","ZIndex":25,"X1":68,"X2":476,"Y1":3841,"Y2":4249},{"Id":"9AC60","Type":"Image","ZIndex":26,"X1":544,"X2":952,"Y1":3841,"Y2":4249},{"Id":"ACFBE","Type":"Image","ZIndex":27,"X1":1020,"X2":1428,"Y1":3841,"Y2":4249},{"Id":"F5FA0","Type":"Image","ZIndex":28,"X1":1496,"X2":1904,"Y1":3841,"Y2":4249},{"Id":"23E2C","Type":"Image","ZIndex":29,"X1":1972,"X2":2380,"Y1":3841,"Y2":4249},{"Id":"94CF0","Type":"Image","ZIndex":30,"X1":2448,"X2":2857,"Y1":3841,"Y2":4249},{"Id":"0DEA0","Type":"Image","ZIndex":31,"X1":68,"X2":476,"Y1":4317,"Y2":4726},{"Id":"A96D2","Type":"Image","ZIndex":32,"X1":544,"X2":952,"Y1":4317,"Y2":4726},{"Id":"677FD","Type":"Image","ZIndex":33,"X1":1020,"X2":1428,"Y1":4317,"Y2":4726},{"Id":"D157C","Type":"Image","ZIndex":34,"X1":1496,"X2":1904,"Y1":4317,"Y2":4726},{"Id":"86A44","Type":"Image","ZIndex":35,"X1":1972,"X2":2380,"Y1":4317,"Y2":4726},{"Id":"FD1F4","Type":"Image","ZIndex":36,"X1":2448,"X2":2857,"Y1":4317,"Y2":4726},{"Id":"66D02","Type":"Design","ZIndex":37,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]},{"Id":"C2844","Index":2,"FinalX1":0,"FinalX2":2925,"FinalY1":1869,"FinalY2":4794,"Description":"Back","Layers":[{"Id":"072FBF","Type":"Design","ZIndex":0,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"BackgroundImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Back.png","IncludeInPrint":true},{"Id":"E2DB3A","Type":"Image","ZIndex":1,"X1":68,"X2":476,"Y1":1937,"Y2":2345},{"Id":"5DEE62","Type":"Image","ZIndex":2,"X1":544,"X2":952,"Y1":1937,"Y2":2345},{"Id":"93E2F1","Type":"Image","ZIndex":3,"X1":1020,"X2":1428,"Y1":1937,"Y2":2345},{"Id":"5C9236","Type":"Image","ZIndex":4,"X1":1496,"X2":1904,"Y1":1937,"Y2":2345},{"Id":"5BFD56","Type":"Image","ZIndex":5,"X1":1972,"X2":2380,"Y1":1937,"Y2":2345},{"Id":"71761C","Type":"Image","ZIndex":6,"X1":2448,"X2":2857,"Y1":1937,"Y2":2345},{"Id":"3D600D","Type":"Image","ZIndex":7,"X1":68,"X2":476,"Y1":2413,"Y2":2821},{"Id":"1ACBA0","Type":"Image","ZIndex":8,"X1":544,"X2":952,"Y1":2413,"Y2":2821},{"Id":"A8D939","Type":"Image","ZIndex":9,"X1":1020,"X2":1428,"Y1":2413,"Y2":2821},{"Id":"61F9CF","Type":"Image","ZIndex":10,"X1":1496,"X2":1904,"Y1":2413,"Y2":2821},{"Id":"24B5B1","Type":"Image","ZIndex":11,"X1":1972,"X2":2380,"Y1":2413,"Y2":2821},{"Id":"1C812A","Type":"Image","ZIndex":12,"X1":2448,"X2":2857,"Y1":2413,"Y2":2821},{"Id":"04C2C8","Type":"Image","ZIndex":13,"X1":68,"X2":476,"Y1":2889,"Y2":3297},{"Id":"6E5E08","Type":"Image","ZIndex":14,"X1":544,"X2":952,"Y1":2889,"Y2":3297},{"Id":"5541E4","Type":"Image","ZIndex":15,"X1":1020,"X2":1428,"Y1":2889,"Y2":3297},{"Id":"D982D7","Type":"Image","ZIndex":16,"X1":1496,"X2":1904,"Y1":2889,"Y2":3297},{"Id":"5D9127","Type":"Image","ZIndex":17,"X1":1972,"X2":2380,"Y1":2889,"Y2":3297},{"Id":"579678","Type":"Image","ZIndex":18,"X1":2448,"X2":2857,"Y1":2889,"Y2":3297},{"Id":"C2FB13","Type":"Image","ZIndex":19,"X1":68,"X2":476,"Y1":3365,"Y2":3773},{"Id":"FC4D3A","Type":"Image","ZIndex":20,"X1":544,"X2":952,"Y1":3365,"Y2":3773},{"Id":"8C00B8","Type":"Image","ZIndex":21,"X1":1020,"X2":1428,"Y1":3365,"Y2":3773},{"Id":"5E0773","Type":"Image","ZIndex":22,"X1":1496,"X2":1904,"Y1":3365,"Y2":3773},{"Id":"4CCEFC","Type":"Image","ZIndex":23,"X1":1972,"X2":2380,"Y1":3365,"Y2":3773},{"Id":"830833","Type":"Image","ZIndex":24,"X1":2448,"X2":2857,"Y1":3365,"Y2":3773},{"Id":"6C7F77","Type":"Image","ZIndex":25,"X1":68,"X2":476,"Y1":3841,"Y2":4249},{"Id":"AC606B","Type":"Image","ZIndex":26,"X1":544,"X2":952,"Y1":3841,"Y2":4249},{"Id":"CFBE55","Type":"Image","ZIndex":27,"X1":1020,"X2":1428,"Y1":3841,"Y2":4249},{"Id":"5FA02C","Type":"Image","ZIndex":28,"X1":1496,"X2":1904,"Y1":3841,"Y2":4249},{"Id":"3E2C81","Type":"Image","ZIndex":29,"X1":1972,"X2":2380,"Y1":3841,"Y2":4249},{"Id":"4CF050","Type":"Image","ZIndex":30,"X1":2448,"X2":2857,"Y1":3841,"Y2":4249},{"Id":"DEA093","Type":"Image","ZIndex":31,"X1":68,"X2":476,"Y1":4317,"Y2":4726},{"Id":"96D257","Type":"Image","ZIndex":32,"X1":544,"X2":952,"Y1":4317,"Y2":4726},{"Id":"77FDFD","Type":"Image","ZIndex":33,"X1":1020,"X2":1428,"Y1":4317,"Y2":4726},{"Id":"157CE1","Type":"Image","ZIndex":34,"X1":1496,"X2":1904,"Y1":4317,"Y2":4726},{"Id":"6A44BA","Type":"Image","ZIndex":35,"X1":1972,"X2":2380,"Y1":4317,"Y2":4726},{"Id":"D1F407","Type":"Image","ZIndex":36,"X1":2448,"X2":2857,"Y1":4317,"Y2":4726},{"Id":"6D0202","Type":"Design","ZIndex":37,"X1":0,"X2":2925,"Y1":0,"Y2":4794,"OverlayImageUrl":"https://az412349.vo.msecnd.net/product-everythingbags/EverythingBag18x18Overlayv3.png","IncludeInPrint":false}]}],"Name":"6x6_36","ImageUrl":"http://app-imgs.print.io/product-beachbags/Beach_Bag-Square6x6_36.png","IsDefault":false}]};
+
+
+    var statify = function (ex, subj, indents) {
+      var cnt = $(ex).find('.cnt');
+      var c = new containerCtor(cnt[0]);
+
+      if (subj) {
+        c = new containerCtor(subj);
+      }
+
+      if (!indents)
+        indents = 0;
+
+      indents = indents * 10;
+      ex.find('.info')
+        .append($("<pre>").text("container: " + c.getContainerPositioning().toString())
+          .css("margin-left", indents + "px"))
+        .append($("<pre>").text("child: " + c.getChildPositioning().toString())
+          .css("margin-left", indents + "px"))
+    };
+
+
+    (function (container, statify) {
+      var img = new containerCtor();
+
+      // ensure the ui container element has static width/height
+      var containerEl = $(container).find('.cnt')[0];
+      containerEl.style.width = "600px";
+      containerEl.style.height = "450px";
+
+      // pass into the template mapper the single template data
+      // straight from the API
+      template = apiData.Options[0];
+      var tdata = templateMapper.toContainerData({
+        template: template
+      });
+
+      // get the template mapper's first space
+      // of course in live we'd have separate images for each space
+      var mappedSingleSpace = tdata.spaces[0];
+
+      // creation of the GTN.ui.Container instance
+      // be sure to have the CSS classes in the header of this doc that are like ncz-* !
+      img.addChild(containerEl, mappedSingleSpace, function (finalData) {
+        // add the user's image into the container
+        // note that we *could* pass in previous image dimensions
+        // so that the user starts where they left off
+        // -- see the reconstitute examples below for that
+        simpleImpl.addImage(tdata, finalData, null, {url: url_live}, function () {
+
+          // reconstitute example!
+          // here we pass in the EXACT IL we get from the
+          // exportStrategies.containerToIL() function
+          // (this would be exportStrategies.containerToIL().print.layers[0])
+          $('.js-reconstitute').click(function () {
+            var prev = {
+              url: url600w400h,
+              "left": -756.0005600004148,
+              "top": -952.0007051857075,
+              "height": 7854.677818279865,
+              "width": 11782.002727409428,
+              "rotation": 0
+            };
+            simpleImpl.addImage(tdata, finalData, null, prev, function (fd1, acc1) {
+            });
+
+          });
+
+          // imgmanip generation
+          // here we pass in the EXACT IL we get from the
+          // exportStrategies.containerToIL() function
+          $('.js-imgmanip').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+            var cmdObj = fns.ILToImgManip(il.print);
+
+            $('.manips').html("").append(
+              $("<pre />")
+                .append(JSON.stringify(cmdObj, null, 2))
+            );
+
+          });
+
+          // imgmanip product preview generation
+          // here we pass in the EXACT IL we get from the
+          // exportStrategies.containerToIL() function
+          $('.js-pimgmanip').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+
+            // note that we pass the preview IL in, and we set the flag to true
+            var cmdObj = fns.ILToImgManip(il.preview, true);
+
+            $('.manips').html("").append(
+              $("<pre />")
+                .append(JSON.stringify(cmdObj, null, 2))
+            );
+
+          });
+
+          // create a html5 canvas preview!
+          // super easy-- just pass in either il.preview or il.print
+          // (admin probly will always be preview)
+          $('.js-canvas').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+            il.preview.maxWidth = 100;
+            il.print.maxWidth = 100;
+
+            console.log(il);
+
+            var cmdObj = fns.ILToCanvas(il.preview, function (canvas) {
+
+              var imageData = canvas.toDataURL("image/jpeg");
+              var image = document.createElement('img');
+              image.src = imageData;
+
+
+              $('.canvases').append(
+                image
+              );
+
+            });
+
+            var cmdObj2 = fns.ILToCanvas(il.print, function (canvas) {
+
+              var imageData = canvas.toDataURL("image/jpeg");
+              var image = document.createElement('img');
+              image.src = imageData;
+
+
+              $('.canvases').append(
+                image
+              );
+
+            });
+          });
+
+          // want to see what IL looks like?
+          $('.js-il').click(function () {
+            var fns = new exportStrategies();
+            var il = fns.containerToIL(template.Spaces[0], mappedSingleSpace);
+
+            $('.manips').html("").append(
+              $("<pre />")
+                .append(JSON.stringify(il, null, 2))
+            );
+
+          });
+
+
+          $('.js-reconstitute2').click(function () {
+            var prev = {
+              url: url600w400h,
+              "left": -3766.002789631696,
+              "top": -1932.001431112171,
+              "height": 7854.677818279865,
+              "width": 11782.016727419797,
+              "rotation": 0
+            };
+            simpleImpl.addImage(tdata, finalData, null, prev, function (fd1, acc1) {
+            });
+
+          });
+
+          $('.js-reconstitute3').click(function () {
+            var prev = {
+              url: url600w400h,
+              "left": -111.99308295783939,
+              "top": -5729.679244206847,
+              "height": 11782.030727430167,
+              "width": 7854.677818279865,
+              "rotation": 90
+            };
+            simpleImpl.addImage(tdata, finalData, null, prev, function (fd1, acc1) {
+            });
+
+          });
+        });
+
+        statify(container, 0);
+        statify(container, containerEl.children[0], 1);
+        statify(container, containerEl.children[1], 1);
+
+
+      });
+
+
+    }($("#tldr"), statify));
+
+
+  })
+  ;
+</script>
+</body>
+
+</html>
