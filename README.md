@@ -8,8 +8,9 @@
 
 What could it be in the future?
 
- - a library for adding an SVG based editor to your page? (for the text benefits)
+ - a library for generating previews directly from source images, skipping the editor step
  - a library for generating a 3d preview of an image on a product
+ - a library for adding an SVG based editor to your page? (for the text benefits)
  - more?
 
 ### Goals
