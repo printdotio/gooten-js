@@ -1,0 +1,20 @@
+{
+  "files":[
+    "src/pio.namespace.js",
+    "src/pio.util.js",
+    "src/pio.util.di.js",
+    "src/pio.util.di.init.js",
+    "src/pio.models.positioning.js",
+    "src/pio.models.position.js",
+
+    "src/pio.services.elementupdaterfns.getcommitstate.js",
+    "src/pio.services.elementupdaterfns.violationstrategy.js",
+    "src/pio.services.elementupdaterfns.suggestedtransform.js",
+    "src/pio.services.elementupdater.js",
+    "src/pio.models.perspective.js",
+    "src/pio.ui.container.js",
+    "src/pio.ui.containerfns.exportstrategies.js",
+    "src/pio.ui.containerfns.simpleimpl.js",
+    "src/pio.services.templatemapper.js"
+  ]
+}

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>editor2 testing</title>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .example {
+      margin-bottom: 40px;
+    }
+
+    .cnt {
+      border: 1px dashed red;
+      position: relative;
+    }
+
+    .blue-dot {
+      border: 1px dashed blue;
+    }
+
+    .green-dot {
+      border: 1px dashed green;
+    }
+
+    .pos {
+      border-right: 1px dotted red;
+      border-bottom: 1px dotted blue;
+      border-left: 1px dotted yellow;
+      border-top: 1px dotted gray;
+    }
+
+    .ctrls {
+      display: block;
+      position: absolute;
+      margin: auto;
+      padding: 0;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      width: 68px;
+    }
+
+    .ctrls-move {
+      display: inline-block;
+      background: red;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ctrls-rotate {
+      display: inline-block;
+      background: blue;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .ctrls-scale {
+      display: inline-block;
+      background: turquoise;
+      color: white;
+      vertical-align: middle;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      padding-left: 4px;
+    }
+
+    .grab-hand{
+      cursor: -webkit-grab;
+      cursor: grab;
+    }
+
+    .grab-hand:active{
+      cursor: -webkit-grabbing;
+      cursor: grabbing;
+    }
+
+
+
+    pre {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="example" id="tldr">
+      <h4>tl;dr;</h4>
+      <p>can do everything</p>
+      <div class="cnt"></div>
+      <br/>
+      <div>
+        <input type="range" min=".01" max="10" id="zoom"/>
+      </div>
+      <br/>
+      <div class="buttons">
+        <button class="btn js-rotate">Rotate Container</button>
+        <button class="btn js-imgmanip">Get Manip</button>
+      </div>
+      <div class="manips"></div>
+      <div class="live-info"></div>
+      <div class="info"></div>
+    </div>
+
+
+    <br/>
+    <br/>
+
+
+  </div>
+  <div class="row">
+    <div id="embedder"></div>
+  </div>
+</div>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="https://cdn.rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="../../assets/js/core/lib/knockout-2.2.0.js"></script>
+<script src="../../assets/js/core/lib/lo-dash-1.2.0.js"></script>
+<script src="../../assets/js/core/src/pio.namespace.js"></script>
+<script src="../../assets/js/core/src/pio.util.js"></script>
+<script src="../../assets/js/core/src/pio.util.di.js"></script>
+<script src="../../assets/js/core/src/pio.util.di.init.js"></script>
+<script src="../../assets/js/core/src/pio.models.positioning.js"></script>
+<script src="../../assets/js/core/src/pio.services.elementupdaterfns.getcommitstate.js"></script>
+<script src="../../assets/js/core/src/pio.services.elementupdaterfns.violationstrategy.js"></script>
+<script src="../../assets/js/core/src/pio.services.elementupdaterfns.suggestedtransform.js"></script>
+<script src="../../assets/js/core/src/pio.services.elementupdater.js"></script>
+<script src="../../assets/js/core/src/pio.models.perspective.js"></script>
+<script src="../../assets/js/core/src/pio.ui.container.js"></script>
+<script src="../../assets/js/core/src/pio.ui.containerfns.canvasmaker.js"></script>
+<script src="../../assets/js/core/src/pio.ui.containerfns.simplemoveandzoom.js"></script>
+<script src="../../assets/js/core/src/pio.services.templatemapper.js"></script>
+
+
+<script>
+
+  $(function () {
+
+    var containerCtor = PIO.util.di.get("PIO.ui.Container");
+    var simpleMoveAndZoom = PIO.util.di.get("PIO.ui.containerFns.simpleMoveAndZoom");
+    var canvasmaker = PIO.util.di.get("PIO.ui.containerFns.canvasMaker");
+
+    var url600w400h = "http://cdn.print.io/temp/600w400h2.png";
+    var url400w600h = "http://cdn.print.io/temp/400w600h2.png";
+    var url150wx100h = "https://s3-us-west-2.amazonaws.com/gooten-assets/testing/test-img.png";
+
+
+    var statify = function (ex, subj, indents) {
+      var cnt = $(ex).find('.cnt');
+      var c = new containerCtor(cnt[0]);
+
+      if (subj) {
+        c = new containerCtor(subj);
+      }
+
+      if (!indents)
+        indents = 0;
+
+      indents = indents * 10;
+      ex.find('.info')
+        .append($("<pre>").text("container: " + c.getContainerPositioning().toString())
+          .css("margin-left", indents + "px"))
+        .append($("<pre>").text("child: " + c.getChildPositioning().toString())
+          .css("margin-left", indents + "px"))
+    };
+
+    (function (container, statify) {
+      var img = new containerCtor();
+      var containerEl = $(container).find('.cnt')[0];
+      containerEl.style.width = "600px";
+      containerEl.style.height = "450px";
+
+      var requiredImageWidth = 800;
+      var requiredImageHeight = 900;
+      var data = {
+        div: {
+          centerFit: true,
+          fns:{
+          onRender: simpleMoveAndZoom.onRender
+          },
+          actual: {
+            width: requiredImageWidth,
+            height: requiredImageHeight,
+          },
+          attrs: {
+            classes: ['blue-dot', 'base']
+          },
+          children: [{
+                    img: {
+                      url: url150wx100h,
+                      maxFit: true,
+                      mustFill: true,
+                      actual: {rotation: 90},
+                      attrs: {
+                        classes: ['edt-img','grab-hand']
+                      }
+                    }
+                  }
+                ]
+              }
+
+      };
+
+      // creation of the PIO.ui.Container instance
+      //
+      //
+      img.addChild(containerEl, data, function () {
+        window.containerData = data;
+        statify(container, 0);
+        statify(container, containerEl.children[0], 1);
+        statify(container, containerEl.children[1], 1);
+
+        $('.js-imgmanip').click(function(){
+
+          var fns = new canvasmaker();
+          var cmdObj = fns.containerToImgManipString(data,requiredImageWidth);
+          // turn this object into JSON
+          // for the admin panel, we would want to submit this JSON to imgmanip server
+          // and use the resultant image
+          $('.manips').append(
+            $("<pre />").append(
+              JSON.stringify(cmdObj,null,2)
+            )
+          );
+
+        });
+
+      });
+
+
+
+    }($("#tldr"), statify));
+
+
+  });
+</script>
+</body>
+
+</html>
