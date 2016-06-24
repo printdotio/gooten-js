@@ -2,6 +2,7 @@
 
 `gooten-js` is currently:
 
+ - a fork of a subset of widget code
  - a library for adding an (`div` and `img` based) "print product editor" to your webpage
  - a library for generating a preview image from an editor's state
  - a library for generating a print image from an editor's state
