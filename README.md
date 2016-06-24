@@ -2,14 +2,23 @@
 
 `gooten-js` is currently:
 
- - a library for adding an editor to your page
+ - a library for adding an (`div` and `img` based) "print product editor" to your webpage
  - a library for generating a preview image from an editor's state
  - a library for generating a print image from an editor's state
 
 What could it be in the future?
 
+ - a library for adding an SVG based editor to your page? (for the text benefits)
  - a library for generating a 3d preview of an image on a product
  - more?
+
+### Goals
+
+ - The input to the editor should be raw template data. This locks users to our format
+ - The output of the editor should be a format that can be mapped into an imgmanip string, an html5 canvas, a jpeg/png
+ - The edit controls should be customizable to what the user wants
+
+**Things should be loosely coupled.**
 
 ### API Examples
 
@@ -31,6 +40,7 @@ The steps are:
 //
 // get the objects we need from DI
 var containerCtor = PIO.util.di.get("PIO.ui.Container");
+// use the "simple" edit controls
 var simpleImpl = PIO.util.di.get("PIO.ui.containerFns.simpleImpl");
 var templateMapper = PIO.util.di.get("PIO.services.templateMapper");
 var exportStrategies = PIO.util.di.get("PIO.ui.containerFns.exportStrategies");
