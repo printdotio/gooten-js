@@ -31,8 +31,8 @@ module.exports = function (grunt) {
       dest:'assets/dist/<%= pkg.name %>.<%= pkg.version %>.css'
     },
     embed:{
-      src: ['assets/js/embed/src/pio.js'],
-      dest:'assets/dist/embed/pio.<%= pkg.version %>.js'
+      src: ['assets/js/embed/src/GTN.js'],
+      dest:'assets/dist/embed/GTN.<%= pkg.version %>.js'
     },
     widget: {
       src: prefix(widgetfiles.widgetsrc.concat(widgetfiles.widgetsrc2)),
@@ -40,11 +40,11 @@ module.exports = function (grunt) {
     },
     canvas: {
       src: canvas_prefix(widgetfiles.widgetsrc.concat(canvasFiles)),
-      dest: 'assets/dist/pio.canvaspreviewer.<%= pkg.version %>.js'
+      dest: 'assets/dist/GTN.canvaspreviewer.<%= pkg.version %>.js'
     },
     editor: {
       src: prefix(editorFiles),
-      dest: 'assets/dist/pio.editor.<%= pkg.version %>.js'
+      dest: 'assets/dist/GTN.editor.<%= pkg.version %>.js'
     }
   });
 };

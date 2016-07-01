@@ -2,9 +2,9 @@
 module.exports = {
     // Original variables
     destWidget: 'assets/dist/<%= pkg.name %>.<%= pkg.version %>.min.js',
-    destEmbed: 'assets/dist/embed/pio.<%= pkg.version %>.min.js',
-  destCanvas: 'assets/dist/pio.canvaspreviewer.<%= pkg.version %>.min.js',
-  destEditor: 'assets/dist/pio.editor.<%= pkg.version %>.min.js',
+    destEmbed: 'assets/dist/embed/GTN.<%= pkg.version %>.min.js',
+  destCanvas: 'assets/dist/GTN.canvaspreviewer.<%= pkg.version %>.min.js',
+  destEditor: 'assets/dist/GTN.editor.<%= pkg.version %>.min.js',
     destMinifyCSS: 'assets/dist/<%= pkg.name %>.<%= pkg.version %>.min.css',
     destPartnerCSS: 'assets/dist/partners/',
     sprites: {
@@ -17,8 +17,8 @@ module.exports = {
         dist: {
             widget: '<%= pkg.name %>.<%= pkg.version %>.min.js',
             embed: {
-                pio: 'pio.<%= pkg.version %>.min.js',
-                pioLatest: 'pio.latest',
+                pio: 'GTN.<%= pkg.version %>.min.js',
+                pioLatest: 'GTN.latest',
             },
             minifyCSS: '<%= pkg.name %>.<%= pkg.version %>.min.css',
             partnerCSS: 'partners/',
@@ -26,8 +26,8 @@ module.exports = {
               x1: 'sprites.<%= pkg.version %>.png',
               x2: 'sprites.<%= pkg.version %>@2x.png'
             },
-          canvas: 'pio.canvaspreviewer.<%= pkg.version %>.min.js',
-          editor: 'pio.editor.<%= pkg.version %>.min.js',
+          canvas: 'GTN.canvaspreviewer.<%= pkg.version %>.min.js',
+          editor: 'GTN.editor.<%= pkg.version %>.min.js',
         },
     },
 };

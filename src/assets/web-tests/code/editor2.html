@@ -129,29 +129,29 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="../../assets/js/core/lib/knockout-2.2.0.js"></script>
 <script src="../../assets/js/core/lib/lo-dash-1.2.0.js"></script>
-<script src="../../assets/js/core/src/pio.namespace.js"></script>
-<script src="../../assets/js/core/src/pio.util.js"></script>
-<script src="../../assets/js/core/src/pio.util.di.js"></script>
-<script src="../../assets/js/core/src/pio.util.di.init.js"></script>
-<script src="../../assets/js/core/src/pio.models.positioning.js"></script>
-<script src="../../assets/js/core/src/pio.services.elementupdaterfns.getcommitstate.js"></script>
-<script src="../../assets/js/core/src/pio.services.elementupdaterfns.violationstrategy.js"></script>
-<script src="../../assets/js/core/src/pio.services.elementupdaterfns.suggestedtransform.js"></script>
-<script src="../../assets/js/core/src/pio.services.elementupdater.js"></script>
-<script src="../../assets/js/core/src/pio.models.perspective.js"></script>
-<script src="../../assets/js/core/src/pio.ui.container.js"></script>
-<script src="../../assets/js/core/src/pio.ui.containerfns.canvasmaker.js"></script>
-<script src="../../assets/js/core/src/pio.ui.containerfns.simplemoveandzoom.js"></script>
-<script src="../../assets/js/core/src/pio.services.templatemapper.js"></script>
+<script src="../../assets/js/core/src/GTN.namespace.js"></script>
+<script src="../../assets/js/core/src/GTN.util.js"></script>
+<script src="../../assets/js/core/src/GTN.util.di.js"></script>
+<script src="../../assets/js/core/src/GTN.util.di.init.js"></script>
+<script src="../../assets/js/core/src/GTN.models.positioning.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.getcommitstate.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.violationstrategy.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdaterfns.suggestedtransform.js"></script>
+<script src="../../assets/js/core/src/GTN.services.elementupdater.js"></script>
+<script src="../../assets/js/core/src/GTN.models.perspective.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.container.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.containerfns.canvasmaker.js"></script>
+<script src="../../assets/js/core/src/GTN.ui.containerfns.simplemoveandzoom.js"></script>
+<script src="../../assets/js/core/src/GTN.services.templatemapper.js"></script>
 
 
 <script>
 
   $(function () {
 
-    var containerCtor = PIO.util.di.get("PIO.ui.Container");
-    var simpleMoveAndZoom = PIO.util.di.get("PIO.ui.containerFns.simpleMoveAndZoom");
-    var canvasmaker = PIO.util.di.get("PIO.ui.containerFns.canvasMaker");
+    var containerCtor = GTN.util.di.get("GTN.ui.Container");
+    var simpleMoveAndZoom = GTN.util.di.get("GTN.ui.containerFns.simpleMoveAndZoom");
+    var canvasmaker = GTN.util.di.get("GTN.ui.containerFns.canvasMaker");
 
     var url600w400h = "http://cdn.print.io/temp/600w400h2.png";
     var url400w600h = "http://cdn.print.io/temp/400w600h2.png";
@@ -214,7 +214,7 @@
 
       };
 
-      // creation of the PIO.ui.Container instance
+      // creation of the GTN.ui.Container instance
       //
       //
       img.addChild(containerEl, data, function () {

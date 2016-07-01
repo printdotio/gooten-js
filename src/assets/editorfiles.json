@@ -1,20 +1,31 @@
 {
   "files":[
-    "src/pio.namespace.js",
-    "src/pio.util.js",
-    "src/pio.util.di.js",
-    "src/pio.util.di.init.js",
-    "src/pio.models.positioning.js",
-    "src/pio.models.position.js",
+    "src/gtn.namespace.js",
+    "src/gtn.util.js",
+    "src/gtn.util.http.js",
 
-    "src/pio.services.elementupdaterfns.getcommitstate.js",
-    "src/pio.services.elementupdaterfns.violationstrategy.js",
-    "src/pio.services.elementupdaterfns.suggestedtransform.js",
-    "src/pio.services.elementupdater.js",
-    "src/pio.models.perspective.js",
-    "src/pio.ui.container.js",
-    "src/pio.ui.containerfns.exportstrategies.js",
-    "src/pio.ui.containerfns.simpleimpl.js",
-    "src/pio.services.templatemapper.js"
+    "src/gtn.util.di.js",
+    "src/gtn.util.di.init.js",
+
+    "src/gtn.config.js",
+
+
+    "src/gtn.api.js",
+    "src/gtn.models.positioning.js",
+    "src/gtn.models.position.js",
+
+    "src/gtn.services.elementupdaterfns.getcommitstate.js",
+    "src/gtn.services.elementupdaterfns.violationstrategy.js",
+    "src/gtn.services.elementupdaterfns.suggestedtransform.js",
+    "src/gtn.services.elementupdater.js",
+    "src/gtn.models.perspective.js",
+    "src/gtn.ui.container.js",
+    "src/gtn.ui.containerfns.exportstrategies.js",
+    "src/gtn.ui.containerfns.simpleimpl.js",
+    "src/gtn.services.templatemapper.js"
+  ],
+  "tests":[
+    "tests/gtn.api.tests.js",
+    "tests/gtn.config.tests.js"
   ]
 }

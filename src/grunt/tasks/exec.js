@@ -22,9 +22,9 @@ module.exports = function (grunt) {
   var destMinifyCSS = p('<%= locations.destMinifyCSS %>');
   var destPartnerCSS = p('<%= locations.destPartnerCSS %>');
   var dist = 'assets/dist/';
-  var pioLatest = dist + 'embed/pio.latest.v2.js';
-  var pioLatestForUpload = dist + 'embed/pio.latest-v2.js'; // TODO: what is this contraption?
-  var pioClassicUpload = dist + 'embed/pio.latest.js'; // TODO: what is this contraption?
+  var pioLatest = dist + 'embed/GTN.latest.v2.js';
+  var pioLatestForUpload = dist + 'embed/GTN.latest-v2.js'; // TODO: what is this contraption?
+  var pioClassicUpload = dist + 'embed/GTN.latest.js'; // TODO: what is this contraption?
 
   grunt.config('exec', {
     make_widget_latest_js: simple('cp %s %s', destWidget, dist + 'printio_widget.latest.js'),
