@@ -365,9 +365,9 @@ Which would yield the response:
 }
 ```
 
-### Parsing the template data
+##### Parsing the template data
 
-The response contains an array of templates. The template you want to work with is the one that has `"Name": "Single"`, so parsing the list for this one should be your first step.
+The response contains an array of templates.
 
 A few notes on what the fields of a template mean:
 
@@ -377,12 +377,38 @@ A few notes on what the fields of a template mean:
  - `Design` layers are ones which include assets to be drawn on the UI
  - `Image` layers represent where you should allow the user to draw
 
-So once you have the `Single` template, in order to draw the UI, one would:
+So once you have a template, in order to draw the UI, one would:
 
  - create a canvas with a width of the largest X value in the layers, a height of the largest Y value in the layers
  - sort the layers using the `ZIndex`
  - for design layers, paint the UI
  - set up your drawing to work only within the `Image` layer coords
+
+
+
+
+#### Getting A SKU's Required Images
+
+Without the correct sized images, an item will not be submitted to a printer. 
+
+
+
+#### Getting a Total For Items in A Cart
+
+ - be sure to do some validation client side
+
+
+
+#### Getting Shipping Options For a Cart
+
+ - be sure to do some validation client side
+
+
+
+#### Submitting an Order
+
+ - be sure to do some validation client side
+
 
 
 

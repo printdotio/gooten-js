@@ -513,7 +513,7 @@ GTN.util.copyArray = function(a){
 
 GTN.util.asserts = {};
 GTN.util.asserts.notNullOrUndefined = function(objName, obj){
-    console.assert(!GTN.util.isUndefined(obj), objName + " must not be null or undefined");
+    console.assert(obj !== null && !GTN.util.isUndefined(obj), objName + " must not be null or undefined");
 }
 
 //// handle the receiving of HTML5 postMessage

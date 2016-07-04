@@ -23,7 +23,9 @@ GTN.Api = function(util, config){
 
 		this.getProducts = function(params, cb){
 			var countryCode = params.countryCode;
+			console.log("countryCode is "+countryCode);
 			util.asserts.notNullOrUndefined("countryCode", countryCode);
+			util.asserts.notNullOrUndefined("cb", cb);
 			var currencyCode = params.currencyCode || config.get("currencyCode");
 			var languageCode = params.languageCode || config.get("languageCode");
 			var showAllProducts = params.showAllProducts || config.get("showAllProducts");
@@ -43,11 +45,31 @@ GTN.Api = function(util, config){
 
 			var countryCode = params.countryCode;
 			util.asserts.notNullOrUndefined("countryCode", countryCode);
+			util.asserts.notNullOrUndefined("cb", cb);
 
 			var currencyCode = params.currencyCode || config.get("currencyCode");
 			var languageCode = params.languageCode || config.get("languageCode");
 			var showAllProducts = params.showAllProducts || config.get("showAllProducts");
 			return util.http.get(self._urlFactory("productVariants",[
+				["recipeId",config.get("recipeId")],
+				["productId",productId],
+				["countryCode", countryCode],
+				["currencyCode", currencyCode],
+				["languageCode", languageCode],
+				["all", showAllProducts],
+				]), cb);
+		};
+
+		this.getTemplates = function(params, cb){
+			var sku = params.sku;
+			util.asserts.notNullOrUndefined("sku", sku);
+			
+			util.asserts.notNullOrUndefined("cb", cb);
+
+			var currencyCode = params.currencyCode || config.get("currencyCode");
+			var languageCode = params.languageCode || config.get("languageCode");
+			var showAllProducts = params.showAllProducts || config.get("showAllProducts");
+			return util.http.get(self._urlFactory("productTemplates",[
 				["recipeId",config.get("recipeId")],
 				["productId",productId],
 				["countryCode", countryCode],
