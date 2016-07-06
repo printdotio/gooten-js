@@ -4,6 +4,7 @@ describe("GTN.Api",function(){
 	beforeEach(function(){
 		GTN.util.di.get("Gtn.config").reset();
 	});
+
 	it("can get user location",function(){
 		var apiCtor = GTN.util.di.get("GTN.Api");
 		var api = new apiCtor({});
@@ -11,13 +12,13 @@ describe("GTN.Api",function(){
 		var err;
 		
 		GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-		api.getUserLocation(function(err,result){
+		api.getUserLocation(function(error,result){
 			res = result;
 			err = error;
 
 		});
 
-		waitsFor(function(){ return res; });
+		waitsFor(function(){ return res || err; });
 
 		expect(err).toBeUndefined();
 		expect(res.length).toEqual(2);
@@ -55,16 +56,20 @@ describe("GTN.Api",function(){
 		var res;
 		var err;
 
-		GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-		api.getProducts({countryCode: "US"},function(error,result){
-			res = result;
-			err = error;
+		runs(function(){
+			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
+			api.getProducts({countryCode: "US"},function(error,result){
+				res = result;
+				err = error;
+			});
 		});
 
-		waitsFor(function(){ return res; });
+		waitsFor(function(){ return res || err; });
 
-		expect(err).toBeUndefined();
-		expect(res.length).toEqual(2);
+		runs(function(){
+			expect(err).toBeUndefined();
+			expect(res.Products.length).toBeDefined();
+		});
 	});
 
 
@@ -73,17 +78,20 @@ describe("GTN.Api",function(){
 		var api = new apiCtor({});
 		var res;
 		var err;
-		
-		GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-		api.getProductVariants({countryCode: "US", productId: 43},function(error,result){
-			res = result;
-			err = error;
+	
+		runs(function(){
+			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
+			api.getProductVariants({countryCode: "US", productId: 43},function(error,result){
+				res = result;
+				err = error;
+			});
 		});
+		waitsFor(function(){ return res || err; });
 
-		waitsFor(function(){ return res; });
-
-		expect(err).toBeUndefined();
-		expect(res.length).toEqual(2);
+		runs(function(){
+			expect(err).toBeUndefined();
+			expect(res.ProductVariants.length).toBeDefined();
+		});
 	});
 
 
@@ -93,16 +101,20 @@ describe("GTN.Api",function(){
 		var res;
 		var err;
 		
-		GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-		api.getTemplates({sku: "CanvsWrp-BlkWrp-5x7"},function(error,result){
-			res = result;
-			err = error;
+		runs(function(){
+			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
+			api.getTemplates({sku: "CanvsWrp-BlkWrp-5x7"},function(error,result){
+				res = result;
+				err = error;
+			});
 		});
 
-		waitsFor(function(){ return res; });
+		waitsFor(function(){ return res || err; });
 
-		expect(err).toBeUndefined();
-		expect(res.length).toEqual(2);
+		runs(function(){
+			expect(err).toBeUndefined();
+			expect(res.Options.length).toBeDefined();
+		});
 	});
 
 

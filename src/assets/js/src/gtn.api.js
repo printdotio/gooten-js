@@ -18,24 +18,26 @@ GTN.Api = function(util, config){
 
 		this.getUserLocation = function(cb){
 			util.asserts.notNullOrUndefined("cb", cb);
-			return util.http.get("https://printio-geo.appspot.com/ip", cb);
+			return util.http.get({
+				url:"https://printio-geo.appspot.com/ip",
+				contentType:"text/plain"
+			}, cb);
 		};
 
 		this.getProducts = function(params, cb){
 			var countryCode = params.countryCode;
-			console.log("countryCode is "+countryCode);
 			util.asserts.notNullOrUndefined("countryCode", countryCode);
 			util.asserts.notNullOrUndefined("cb", cb);
 			var currencyCode = params.currencyCode || config.get("currencyCode");
 			var languageCode = params.languageCode || config.get("languageCode");
 			var showAllProducts = params.showAllProducts || config.get("showAllProducts");
-			return util.http.get(self._urlFactory("products",[
+			return util.http.get({url:self._urlFactory("products",[
 				["recipeId",config.get("recipeId")],
 				["countryCode", countryCode],
 				["currencyCode", currencyCode],
 				["languageCode", languageCode],
 				["all", showAllProducts],
-				]), cb);
+				])}, cb);
 		};
 
 
@@ -50,33 +52,26 @@ GTN.Api = function(util, config){
 			var currencyCode = params.currencyCode || config.get("currencyCode");
 			var languageCode = params.languageCode || config.get("languageCode");
 			var showAllProducts = params.showAllProducts || config.get("showAllProducts");
-			return util.http.get(self._urlFactory("productVariants",[
+			return util.http.get({url: self._urlFactory("productVariants",[
 				["recipeId",config.get("recipeId")],
 				["productId",productId],
 				["countryCode", countryCode],
 				["currencyCode", currencyCode],
 				["languageCode", languageCode],
 				["all", showAllProducts],
-				]), cb);
+				])}, cb);
 		};
 
 		this.getTemplates = function(params, cb){
 			var sku = params.sku;
 			util.asserts.notNullOrUndefined("sku", sku);
-			
 			util.asserts.notNullOrUndefined("cb", cb);
-
-			var currencyCode = params.currencyCode || config.get("currencyCode");
-			var languageCode = params.languageCode || config.get("languageCode");
 			var showAllProducts = params.showAllProducts || config.get("showAllProducts");
-			return util.http.get(self._urlFactory("productTemplates",[
-				["recipeId",config.get("recipeId")],
-				["productId",productId],
-				["countryCode", countryCode],
-				["currencyCode", currencyCode],
-				["languageCode", languageCode],
-				["all", showAllProducts],
-				]), cb);
+
+			return util.http.get({url: self._urlFactory("productTemplates",[
+				["sku", sku],
+				["recipeId",config.get("recipeId")]
+				])}, cb);
 		};
 	}
 }
