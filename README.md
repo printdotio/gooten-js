@@ -391,25 +391,28 @@ So once you have a template, in order to draw the UI, one would:
 
 Without the correct sized images, an item will not be submitted to a printer. 
 
+// Andrey TODO
+
 
 
 #### Getting a Total For Items in A Cart
 
  - be sure to do some validation client side
 
+// Andrey TODO
 
 
 #### Getting Shipping Options For a Cart
 
  - be sure to do some validation client side
 
-
+// Andrey TODO
 
 #### Submitting an Order
 
  - be sure to do some validation client side
 
-
+// Andrey TODO
 
 
 #### Creating An Editor
