@@ -393,6 +393,7 @@ Without the correct sized images, an item will not be submitted to a printer.
 
 // Andrey TODO
 
+can use image size API
 
 
 #### Getting a Total For Items in A Cart
@@ -516,5 +517,7 @@ img.addChild(containerEl, mappedSingleSpace, function (finalData) {
 });
 ```
 
+#### Creating Custom Templates For The Editor
 
+TODO
 

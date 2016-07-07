@@ -86,6 +86,7 @@ describe("GTN.Api",function(){
 				err = error;
 			});
 		});
+		
 		waitsFor(function(){ return res || err; });
 
 		runs(function(){
