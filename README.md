@@ -393,7 +393,17 @@ Without the correct sized images, an item will not be submitted to a printer.
 
 // Andrey TODO
 
-can use image size API
+```js
+// get templates for a sku
+api.getSKUImages({sku: "CanvsWrp-BlkWrp-5x7"}, function(err, result){
+  // result should look like
+  // an array of what image sizes would need submitted to make this work
+  // for example, for a canvas there would only be one
+  
+  // `result` could look like [{ width: 1500, height 2100}]
+});
+
+```
 
 
 #### Getting a Total For Items in A Cart
