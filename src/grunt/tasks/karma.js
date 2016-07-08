@@ -3,7 +3,7 @@
 module.exports = function (grunt) {
   grunt.config('karma', {
     options: {
-      configFile: 'assets/js/core/karma.conf.js',
+      configFile: 'src/assets/karma.conf.js',
       runnerPort: 9999,
       singleRun: true,
       browsers: ['Chrome'],
@@ -11,8 +11,5 @@ module.exports = function (grunt) {
       browserNoActivityTimeout: 999999
     },
     core: {},
-    embed: {
-      configFile: 'assets/js/embed/karma.conf.js'
-    }
   });
 };

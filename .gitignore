@@ -1,5 +1,4 @@
 node_modules
 .DS_Store
-core-results.xml
-core_results.xml
-
+.idea
+*.log

@@ -1,31 +1,34 @@
 {
   "files":[
-    "src/gtn.namespace.js",
-    "src/gtn.util.js",
-    "src/gtn.util.http.js",
+    "js/lib/lo-dash-1.2.0.js",
+    "js/lib/knockout-3.2.0.js",
+	"js/lib/jquery-1.8.3.js",
 
-    "src/gtn.util.di.js",
-    "src/gtn.util.di.init.js",
+    "js/src/gtn.namespace.js",
+    "js/src/gtn.util.js",
+    "js/src/gtn.util.http.js",
 
-    "src/gtn.config.js",
+    "js/src/gtn.util.di.js",
+    "js/src/gtn.util.di.init.js",
 
+    "js/src/gtn.config.js",
 
-    "src/gtn.api.js",
-    "src/gtn.models.positioning.js",
-    "src/gtn.models.position.js",
+    "js/src/gtn.api.js",
+    "js/src/gtn.models.positioning.js",
+    "js/src/gtn.models.position.js",
 
-    "src/gtn.services.elementupdaterfns.getcommitstate.js",
-    "src/gtn.services.elementupdaterfns.violationstrategy.js",
-    "src/gtn.services.elementupdaterfns.suggestedtransform.js",
-    "src/gtn.services.elementupdater.js",
-    "src/gtn.models.perspective.js",
-    "src/gtn.ui.container.js",
-    "src/gtn.ui.containerfns.exportstrategies.js",
-    "src/gtn.ui.containerfns.simpleimpl.js",
-    "src/gtn.services.templatemapper.js"
+    "js/src/gtn.services.elementupdaterfns.getcommitstate.js",
+    "js/src/gtn.services.elementupdaterfns.violationstrategy.js",
+    "js/src/gtn.services.elementupdaterfns.suggestedtransform.js",
+    "js/src/gtn.services.elementupdater.js",
+    "js/src/gtn.models.perspective.js",
+    "js/src/gtn.ui.container.js",
+    "js/src/gtn.ui.containerfns.exportstrategies.js",
+    "js/src/gtn.ui.containerfns.simpleimpl.js",
+    "js/src/gtn.services.templatemapper.js"
   ],
   "tests":[
-    "tests/gtn.api.tests.js",
-    "tests/gtn.config.tests.js"
+    "js/tests/gtn.api.tests.js",
+    "js/tests/gtn.config.tests.js"
   ]
 }

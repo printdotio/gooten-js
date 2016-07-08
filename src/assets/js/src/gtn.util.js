@@ -509,12 +509,21 @@ GTN.util.copyArray = function(a){
   var f = [];
   a.forEach(function(i){f.push(i);});
   return a;
-}
+};
 
 GTN.util.asserts = {};
 GTN.util.asserts.notNullOrUndefined = function(objName, obj){
     console.assert(obj !== null && !GTN.util.isUndefined(obj), objName + " must not be null or undefined");
-}
+};
+
+GTN.util.asserts.equals = function(objName, obj, expected) {
+  console.assert(obj === expected, objName + " must be equal to " + expected);
+};
+
+GTN.util.asserts.moreThan = function(objName, obj, expected) {
+  console.assert(obj !== null && obj > expected, objName + " must be more than " + expected);
+};
+
 
 //// handle the receiving of HTML5 postMessage
 //GTN.util._postMessageHandlers = [];

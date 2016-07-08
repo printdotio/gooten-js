@@ -2,12 +2,12 @@
 
 module.exports = function (grunt) {
 
-  grunt.initConfig(require('./grunt/configuration'));
+  grunt.initConfig(require('./src/grunt/configuration'));
 
   grunt.loadNpmTasks('grunt-env');
   grunt.loadNpmTasks('grunt-azure-blob');
 
-  grunt.loadTasks('grunt/tasks');
+  grunt.loadTasks('src/grunt/tasks');
 
   require('load-grunt-tasks')(grunt);
 

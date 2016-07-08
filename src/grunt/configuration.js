@@ -4,9 +4,9 @@ var banner = '/* <%= pkg.name %>@v<%= pkg.version %>, <%= pkg.license %> license
 module.exports = {
   pkg: grunt.file.readJSON('package.json'),
   banner: banner,
-  widgetfiles: grunt.file.readJSON('./assets/js/widgetfiles.json'),
-  editorfiles: grunt.file.readJSON('./assets/js/editorfiles.json').files,
-  canvasfiles: grunt.file.readJSON('./assets/js/canvas-previewer/files.json').src,
+  //widgetfiles: grunt.file.readJSON('./src/assets/js/widgetfiles.json'),
+  editorfiles: grunt.file.readJSON('./src/assets/editorfiles.json').files,
+  //canvasfiles: grunt.file.readJSON('./src/assets/js/canvas-previewer/files.json').src,
   locations: require('./locations'),
 
   env: {

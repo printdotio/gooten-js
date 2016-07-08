@@ -13,9 +13,9 @@ function canvas_prefix (files) {
 }
 
 module.exports = function (grunt) {
-	var widgetfiles = grunt.config.get('widgetfiles');
+  //var widgetfiles = grunt.config.get('widgetfiles');
 
-  var canvasFiles = grunt.config.get('canvasfiles');
+  //var canvasFiles = grunt.config.get('canvasfiles');
   var editorFiles = grunt.config.get('editorfiles');
 
 	grunt.config('concat', {
@@ -34,7 +34,8 @@ module.exports = function (grunt) {
       src: ['assets/js/embed/src/GTN.js'],
       dest:'assets/dist/embed/GTN.<%= pkg.version %>.js'
     },
-    widget: {
+	/*    
+	widget: {
       src: prefix(widgetfiles.widgetsrc.concat(widgetfiles.widgetsrc2)),
       dest: 'assets/dist/<%= pkg.name %>.<%= pkg.version %>.js'
     },
@@ -42,6 +43,7 @@ module.exports = function (grunt) {
       src: canvas_prefix(widgetfiles.widgetsrc.concat(canvasFiles)),
       dest: 'assets/dist/GTN.canvaspreviewer.<%= pkg.version %>.js'
     },
+	*/
     editor: {
       src: prefix(editorFiles),
       dest: 'assets/dist/GTN.editor.<%= pkg.version %>.js'
