@@ -81,32 +81,57 @@ GTN.Api = function(util, config) {
         };
 
         this.getRequiredImages = function (params, cb) {
-
+            util.asserts.notNullOrUndefined("template", params.template);
+            self.getTemplates(params, function(err, templates){
+                var template = _.find(templates.Options, function(template){
+                    return template.Name === params.template;
+                });
+                var result = _.map(template.Spaces, function(space){
+                    var layers = _.map(space.Layers, function(layer) {
+                        if(layer.Type !== 'Image')
+                            return null;
+                        return {
+                            X1: layer.X1,
+                            Y1: layer.Y1,
+                            X2: layer.X2,
+                            Y2: layer.Y2
+                        };
+                    });
+                    return _.filter(layers, function(layer){
+                        return layer != null;
+                    });
+                });
+                result = _.flatten(result);
+                cb(err, result)
+            })
         };
 
-        this.getTotal = function(params, cb) {
+        this.getTotal = function(data, cb) {
             util.asserts.notNullOrUndefined("cb", cb);
 
-            util.asserts.notNullOrUndefined("ShipToAddress", params.ShipToAddress);
-            util.asserts.notNullOrUndefined("ShipToAddress.firstName", params.ShipToAddress.firstName);
-            util.asserts.notNullOrUndefined("ShipToAddress.lastName", params.ShipToAddress.lastName);
-            util.asserts.notNullOrUndefined("ShipToAddress.line1", params.ShipToAddress.line1);
-            util.asserts.notNullOrUndefined("ShipToAddress.city", params.ShipToAddress.city);
-            util.asserts.notNullOrUndefined("ShipToAddress.postalCode", params.ShipToAddress.postalCode);
-            util.asserts.notNullOrUndefined("ShipToAddress.countryCode", params.ShipToAddress.countryCode);
-            util.asserts.notNullOrUndefined("ShipToAddress.email", params.ShipToAddress.email);
-            util.asserts.notNullOrUndefined("ShipToAddress.phone", params.ShipToAddress.phone);
+            util.asserts.notNullOrUndefined("ShipToAddress", data.ShipToAddress);
+            util.asserts.notNullOrUndefined("ShipToAddress.firstName", data.ShipToAddress.firstName);
+            util.asserts.notNullOrUndefined("ShipToAddress.lastName", data.ShipToAddress.lastName);
+            util.asserts.notNullOrUndefined("ShipToAddress.line1", data.ShipToAddress.line1);
+            util.asserts.notNullOrUndefined("ShipToAddress.city", data.ShipToAddress.city);
+            util.asserts.notNullOrUndefined("ShipToAddress.postalCode", data.ShipToAddress.postalCode);
+            util.asserts.notNullOrUndefined("ShipToAddress.countryCode", data.ShipToAddress.countryCode);
+            util.asserts.notNullOrUndefined("ShipToAddress.email", data.ShipToAddress.email);
+            util.asserts.notNullOrUndefined("ShipToAddress.phone", data.ShipToAddress.phone);
 
-            util.asserts.moreThan("Items.length", params.Items.length, 0);
-            _.each(params.Items, function(obj){
+            util.asserts.moreThan("Items.length", data.Items.length, 0);
+            _.each(data.Items, function(obj){
                 util.asserts.notNullOrUndefined("SKU", obj);
                 util.asserts.notNullOrUndefined("ShipCarrierMethodId", obj.ShipCarrierMethodId);
                 util.asserts.moreThan("Quantity", obj.Quantity, 0);
             });
 
             return util.http.post({
-                url: self._urlFactory("priceestimate")
-            }, cb, params);
+                url: self._urlFactory("priceestimate", [
+                    ["recipeId", config.get("recipeId")]
+                ]),
+                data: data
+            }, cb);
         };
 
         this.getShippingOptions = function(params, cb) {
@@ -120,8 +145,11 @@ GTN.Api = function(util, config) {
             });
 
             return util.http.post({
-                url: self._urlFactory("shippingPrices")
-            }, cb, params);
+                url: self._urlFactory("shippingPrices", [
+                    ["recipeId", config.get("recipeId")]
+                ]),
+                data: params
+            }, cb);
         };
 
         this.orderSubmit = function(params, cb) {
@@ -157,8 +185,11 @@ GTN.Api = function(util, config) {
             util.asserts.notNullOrUndefined("Payment.BraintreeEncryptedCCV", params.Payment.BraintreeEncryptedCCV);
 
             return util.http.post({
-                url: self._urlFactory("priceestimate")
-            }, cb, params);
+                url: self._urlFactory("orders", [
+                    ["recipeId", config.get("recipeId")]
+                ]),
+                data: params
+            }, cb);
         };
     }
 };
