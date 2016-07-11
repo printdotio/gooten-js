@@ -172,7 +172,7 @@ describe("GTN.Api",function(){
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
 			api.getTotal({
-                ShipToAddress: {firstName: "Keith", lastName: "Richards", line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", city: "BEVERLY HILLS", state: "CA", postalCode: "90210", countryCode: "US", email: "keith@rollingstones.uk", phone: "2233322233322"},
+                ShipToAddress: {countryCode: "US"},
                 Items: [
                     {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 0, Quantity: 1},
                     {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 0, Quantity: 1}

@@ -385,34 +385,352 @@ So once you have a template, in order to draw the UI, one would:
  - set up your drawing to work only within the `Image` layer coords
 
 
-
-
 #### Getting A SKU's Required Images
 
 Without the correct sized images, an item will not be submitted to a printer. 
 
-// Andrey TODO
+The `getRequiredImages` function `params` argument takes 2 values:
 
+ - `sku` - required - the SKU you are requesting templates for
+ - `template` - required - the name of template to get images sizes
+
+Example:
+
+```js
+api.getRequiredImages(
+    {
+        sku: "CanvsWrp-BlkWrp-5x7",
+        template: '3x4_5_Top_Rectangle'
+    },
+    function(error,result){
+        ...
+    }
+);
+```
+
+This yields the response:
+
+```
+[
+  {
+    "X1": 499,
+    "Y1": 499,
+    "X2": 2501,
+    "Y2": 1388
+  },
+  {
+    "X1": 499,
+    "Y1": 1437,
+    "X2": 963,
+    "Y2": 1901
+  },
+  {
+    "X1": 1012,
+    "Y1": 1437,
+    "X2": 1475,
+    "Y2": 1901
+  },
+  {
+    "X1": 1525,
+    "Y1": 1437,
+    "X2": 1988,
+    "Y2": 1901
+  },
+  {
+    "X1": 2037,
+    "Y1": 1437,
+    "X2": 2501,
+    "Y2": 1901
+  }
+]
+```
+
+Here we have the list with sizes of images which will be submitted to printer.
 
 
 #### Getting a Total For Items in A Cart
 
- - be sure to do some validation client side
+The `getTotal` function `params` argument takes several values:
 
-// Andrey TODO
+ - `countryCode` - required - shipping 2-letter country code
+ - `SKU` - required - SKU of product
+ - `ShipCarrierMethodId` - required - Id of shipping method
+ - `Quantity` - required - number of items with this SKU
 
+Example:
+
+```js
+api.getTotal(
+    {
+        ShipToAddress: {
+            countryCode: "US",
+        }
+    },
+    Items: [
+            {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 0, Quantity: 1},
+            {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 0, Quantity: 1}
+        ]
+    }, function(error,result){
+        ...
+    }
+);
+```
+
+This yields the response:
+
+```
+{
+  "Items": {
+    "Price": 85.05,
+    "CurrencyCode": "USD",
+    "FormattedPrice": "$85.05",
+    "CurrencyFormat": "${1}",
+    "CurrencyDigits": 2
+  },
+  "HadCouponApply": false,
+  "HadError": false
+}
+```
 
 #### Getting Shipping Options For a Cart
 
- - be sure to do some validation client side
+The `getTotal` function `params` argument takes several values:
 
-// Andrey TODO
+ - `ShipToPostalCode` - required - postal code
+ - `ShipToCountry` - required - 2-letter country code
+ - `ShipToState` - optional - state code if exists
+ - `CurrencyCode` - required - currency code
+ - `LanguageCode` - required - 2-letter language code
+ - `SKU` - required - SKU of product
+ - `Quantity` - required - number of items with this SKU
+
+Example:
+
+```js
+api.getShippingOptions({
+    ShipToPostalCode: "90210",
+    ShipToCountry: "US",
+    ShipToState: "CA",
+    CurrencyCode: "USD",
+    LanguageCode: "en",
+    Items: [
+        {
+            SKU: "CanvsWrp-BlkWrp-18x24",
+            Quantity: 1
+        },
+        {
+            SKU: "Framed_12x18_Black_Lustre",
+            Quantity: 1
+        }
+    ]
+}, function (error, result) {
+    ...
+});
+```
+
+This yields the response:
+
+```
+{
+  "Result": [
+    {
+      "SKUs": [
+        "CanvsWrp-BlkWrp-18x24"
+      ],
+      "ShipOptions": [
+        {
+          "CarrierName": "Standard",
+          "MethodType": "Standard",
+          "Name": "Standard",
+          "Price": {
+            "Price": 11.98,
+            "CurrencyCode": "USD",
+            "FormattedPrice": "$11.98",
+            "CurrencyFormat": "${1}",
+            "CurrencyDigits": 2
+          },
+          "Id": 1,
+          "EstBusinessDaysTilDelivery": 12,
+          "MethodId": 3
+        },
+        {
+          "CarrierName": "Expedited",
+          "MethodType": "Expedited",
+          "Name": "Expedited",
+          "Price": {
+            "Price": 20.22,
+            "CurrencyCode": "USD",
+            "FormattedPrice": "$20.22",
+            "CurrencyFormat": "${1}",
+            "CurrencyDigits": 2
+          },
+          "Id": 2,
+          "EstBusinessDaysTilDelivery": 4,
+          "MethodId": 5
+        },
+        {
+          "CarrierName": "Overnight",
+          "MethodType": "Overnight",
+          "Name": "Overnight",
+          "Price": {
+            "Price": 32.97,
+            "CurrencyCode": "USD",
+            "FormattedPrice": "$32.97",
+            "CurrencyFormat": "${1}",
+            "CurrencyDigits": 2
+          },
+          "Id": 3,
+          "EstBusinessDaysTilDelivery": 2,
+          "MethodId": 7
+        }
+      ]
+    },
+    {
+      "SKUs": [
+        "Framed_12x18_Black_Lustre"
+      ],
+      "ShipOptions": [
+        {
+          "CarrierName": "Expedited",
+          "MethodType": "Expedited",
+          "Name": "Expedited",
+          "Price": {
+            "Price": 20.57,
+            "CurrencyCode": "USD",
+            "FormattedPrice": "$20.57",
+            "CurrencyFormat": "${1}",
+            "CurrencyDigits": 2
+          },
+          "Id": 2,
+          "EstBusinessDaysTilDelivery": 4,
+          "MethodId": 5
+        },
+        {
+          "CarrierName": "Standard",
+          "MethodType": "Standard",
+          "Name": "Standard",
+          "Price": {
+            "Price": 10.75,
+            "CurrencyCode": "USD",
+            "FormattedPrice": "$10.75",
+            "CurrencyFormat": "${1}",
+            "CurrencyDigits": 2
+          },
+          "Id": 1,
+          "EstBusinessDaysTilDelivery": 12,
+          "MethodId": 3
+        },
+        {
+          "CarrierName": "Overnight",
+          "MethodType": "Overnight",
+          "Name": "Overnight",
+          "Price": {
+            "Price": 14.49,
+            "CurrencyCode": "USD",
+            "FormattedPrice": "$14.49",
+            "CurrencyFormat": "${1}",
+            "CurrencyDigits": 2
+          },
+          "Id": 3,
+          "EstBusinessDaysTilDelivery": 2,
+          "MethodId": 7
+        }
+      ]
+    }
+  ]
+}
+```
 
 #### Submitting an Order
 
- - be sure to do some validation client side
+The `orderSubmit` function `params` argument takes several values:
 
-// Andrey TODO
+`ShipToAddress` section:
+ - `firstName` - required - first name of user
+ - `lastName` - required - last name of user
+ - `line1` - required - shipping address
+ - `city` - required - shipping city
+ - `state` - required - shipping state if exists
+ - `postalCode` - required - shipping postal code
+ - `countryCode` - required - shipping 2-letter country code
+ - `email` - required - user's email
+ - `phone` - required - users' phone
+
+`BillingAddress` section:
+ - `firstName` - required - first name of user
+ - `lastName` - required - last name of user
+ - `postalCode` - required - shipping postal code
+ - `countryCode` - required - shipping 2-letter country code
+
+`Items` section:
+ - `SKU` - required - SKU of product
+ - `ShipCarrierMethodId` - required - Id of ship carrier method
+ - `Quantity` - required - number of items with this SKU
+ - `Images` - required - list of images which contains `Index` of image and `ManipCommand`
+ 
+`Payment` section:
+ - `BraintreeEncryptedCCNumber` - required - encrypted card number
+ - `BraintreeEncryptedCCExpDate` - required - encrypted valid date of card
+ - `BraintreeEncryptedCCV` - required - encripted CCV number
+ - `CurrencyCode` - required - currency code
+ - `Total` - required - order total
+
+Example:
+
+```js
+api.orderSubmit({
+                ShipToAddress: {
+                    firstName: "Keith", 
+                    lastName: "Richards", 
+                    line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
+                    city: "BEVERLY HILLS", 
+                    state: "CA", 
+                    postalCode: "90210", 
+                    countryCode: "US", 
+                    email: "keith@rollingstones.uk", 
+                    phone: "2233322233322"},
+                BillingAddress: {
+                    firstName: "Keith", 
+                    lastName: "Richards", 
+                    postalCode: "90210", 
+                    countryCode: "US"},
+                Items: [
+                    {
+                        SKU: "CanvsWrp-BlkWrp-18x24", 
+                        ShipCarrierMethodId: 1, 
+                        Quantity: 1, 
+                        Images:[
+                            {Index: 0, ManipCommand: '{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=+450.00078260869566+450.00078260869566,"},"index":0},{"name":"convert","args":{"format":"jpg"},"index":999},{"name":"quality","args":{"value":100},"index":0},{"name":"resample2","args":{"dpi":300,"units":"PixelsPerInch"},"index":0},{"name":"crop","args":{"x1":450,"x2":7650,"y1":450,"y2":5850},"index":997}],"layers":[{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=-626.0912608695652+0"},"index":0}],"layers":[{"name":"image","commands":[{"name":"resize","args":{"height":5400.005869565217,"width":8452.19152173913},"index":0}],"layers":[],"settings":{"uri":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B","printUrl":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B"}}],"settings":{"width":7200.00195652174,"height":5400.005869565217,"index":0,"color":"#000000"}}],"settings":{"width":8100,"height":6300,"color":"#000000"}}'}
+                    ]},
+                    {
+                        SKU: "Framed_12x18_Black_Lustre", 
+                        ShipCarrierMethodId: 1, 
+                        Quantity: 1, 
+                        Images:[
+                            {Index: 0, ManipCommand: '{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=+1050.0000000000002+1050.0000000000002,"},"index":0},{"name":"convert","args":{"format":"jpg"},"index":999},{"name":"quality","args":{"value":100},"index":0},{"name":"resample2","args":{"dpi":300,"units":"PixelsPerInch"},"index":0},{"name":"crop","args":{"x1":1050,"x2":6450,"y1":1050,"y2":4650},"index":997}],"layers":[{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=-117.3913043478261+0"},"index":0}],"layers":[{"name":"image","commands":[{"name":"resize","args":{"height":3600.0000000000005,"width":5634.782608695653},"index":0}],"layers":[],"settings":{"uri":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B","printUrl":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B"}}],"settings":{"width":5400,"height":3600.0000000000005,"index":0,"color":"#000000"}}],"settings":{"width":7500,"height":5700,"color":"#000000"}}'}
+                    ]}
+                ],
+                Payment: {
+                    BraintreeEncryptedCCNumber: "$bt4|javascript_1_3_10$ ...",
+                    BraintreeEncryptedCCExpDate: "$bt4|javascript_1_3_10$FMA9OkM4Z9u8bj9 ...",
+                    BraintreeEncryptedCCV: "$bt4|javascript_1_3_10$UlauiA0BD42AZdw...",
+                    CurrencyCode: "USD",
+                    Total: "107.78"
+                }
+            },function(error,result){
+			    ...
+			});
+```
+
+This yields the response:
+
+```
+{
+  "Id": "7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec"
+}
+```
+
+It contains Id of submitted order.
 
 
 #### Creating An Editor
