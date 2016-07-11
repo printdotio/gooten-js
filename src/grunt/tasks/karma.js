@@ -6,7 +6,6 @@ module.exports = function (grunt) {
       configFile: 'src/assets/karma.conf.js',
       runnerPort: 9999,
       singleRun: true,
-      browsers: ['Chrome'],
       frameworks: ['jasmine-ajax','jasmine'],
       browserNoActivityTimeout: 999999
     },

@@ -5,24 +5,26 @@ describe("GTN.Api",function(){
 		GTN.util.di.get("Gtn.config").reset();
 	});
 
-    it("can get user location",function(){
-		var apiCtor = GTN.util.di.get("GTN.Api");
-		var api = new apiCtor({});
-		var res;
-		var err;
+    it("can get user location",function() {
+        var apiCtor = GTN.util.di.get("GTN.Api");
+        var api = new apiCtor({});
+        var res;
+        var err;
 
-		GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-		api.getUserLocation(function(error,result){
-			res = result;
-			err = error;
+        runs(function () {
+            GTN.util.di.get("Gtn.config").set("recipeId", recipeId);
+            api.getUserLocation(function (error, result) {
+                res = result;
+                err = error;
+            });
+        });
 
-		});
+        waitsFor(function () { return res || err; });
 
-		waitsFor(function(){ return res || err; });
-
-		expect(err).toBeUndefined();
-		expect(res.length).toEqual(2);
-
+        runs(function () {
+            expect(err).toBeUndefined();
+            expect(res.length).toEqual(2);
+        });
     });
 
     describe("_urlFactory", function(){
