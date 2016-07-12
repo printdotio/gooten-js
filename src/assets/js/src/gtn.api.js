@@ -83,25 +83,22 @@ GTN.Api = function(util, config) {
         this.getRequiredImages = function (params, cb) {
             util.asserts.notNullOrUndefined("template", params.template);
             self.getTemplates(params, function(err, templates){
-                var template = _.find(templates.Options, function(template){
+                var template = templates.Options.find(function(template){
                     return template.Name === params.template;
                 });
-                var result = _.map(template.Spaces, function(space){
-                    var layers = _.map(space.Layers, function(layer) {
+                var result = [];
+                template.Spaces.forEach(function(space){
+                    space.Layers.forEach(function(layer) {
                         if(layer.Type !== 'Image')
                             return null;
-                        return {
+                        result.push({
                             X1: layer.X1,
                             Y1: layer.Y1,
                             X2: layer.X2,
                             Y2: layer.Y2
-                        };
-                    });
-                    return _.filter(layers, function(layer){
-                        return layer != null;
+                        });
                     });
                 });
-                result = _.flatten(result);
                 cb(err, result)
             })
         };
@@ -112,7 +109,7 @@ GTN.Api = function(util, config) {
             util.asserts.notNullOrUndefined("ShipToAddress.countryCode", data.ShipToAddress.countryCode);
 
             util.asserts.moreThan("Items.length", data.Items.length, 0);
-            _.each(data.Items, function(obj){
+            data.Items.forEach(function(obj){
                 util.asserts.notNullOrUndefined("SKU", obj);
                 util.asserts.notNullOrUndefined("ShipCarrierMethodId", obj.ShipCarrierMethodId);
                 util.asserts.moreThan("Quantity", obj.Quantity, 0);
@@ -131,7 +128,7 @@ GTN.Api = function(util, config) {
             
             util.asserts.moreThan("length", params.length, 0);
             
-            _.each(params, function(obj){
+            params.Items.forEach(function(obj){
                 util.asserts.notNullOrUndefined("SKU", obj);
                 util.asserts.moreThan("Quantity", obj.Quantity, 0);
             });
@@ -164,7 +161,7 @@ GTN.Api = function(util, config) {
             util.asserts.notNullOrUndefined("BillingAddress.email", params.BillingAddress.email);
 
             util.asserts.moreThan("Items.length", params.Items.length, 0);
-            _.each(params.Items, function(obj){
+            params.Items.forEach(function(obj){
                 util.asserts.notNullOrUndefined("SKU", obj);
                 util.asserts.notNullOrUndefined("ShipCarrierMethodId", obj.ShipCarrierMethodId);
                 util.asserts.moreThan("Quantity", obj.Quantity, 0);
