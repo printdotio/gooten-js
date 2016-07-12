@@ -109,15 +109,7 @@ GTN.Api = function(util, config) {
         this.getTotal = function(data, cb) {
             util.asserts.notNullOrUndefined("cb", cb);
 
-            util.asserts.notNullOrUndefined("ShipToAddress", data.ShipToAddress);
-            util.asserts.notNullOrUndefined("ShipToAddress.firstName", data.ShipToAddress.firstName);
-            util.asserts.notNullOrUndefined("ShipToAddress.lastName", data.ShipToAddress.lastName);
-            util.asserts.notNullOrUndefined("ShipToAddress.line1", data.ShipToAddress.line1);
-            util.asserts.notNullOrUndefined("ShipToAddress.city", data.ShipToAddress.city);
-            util.asserts.notNullOrUndefined("ShipToAddress.postalCode", data.ShipToAddress.postalCode);
             util.asserts.notNullOrUndefined("ShipToAddress.countryCode", data.ShipToAddress.countryCode);
-            util.asserts.notNullOrUndefined("ShipToAddress.email", data.ShipToAddress.email);
-            util.asserts.notNullOrUndefined("ShipToAddress.phone", data.ShipToAddress.phone);
 
             util.asserts.moreThan("Items.length", data.Items.length, 0);
             _.each(data.Items, function(obj){
