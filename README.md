@@ -387,6 +387,11 @@ So once you have a template, in order to draw the UI, one would:
 
 #### Getting A SKU's Required Images
 
+**TODO**
+
+ - this should not take a template parameter. should only use "Single"
+ - this should return width and height params, not X1X2Y1Y2
+
 Without the correct sized images, an item will not be submitted to a printer. 
 
 The `getRequiredImages` function `params` argument takes 2 values:
@@ -449,6 +454,12 @@ Here we have the list with sizes of images which will be submitted to printer.
 
 
 #### Getting a Total For Items in A Cart
+
+**TODO**
+
+ - where does shipping come from?
+ - how to get taxes
+ - passing in full address or partial address?
 
 The `getTotal` function `params` argument takes several values:
 
@@ -654,6 +665,10 @@ TODO
 Be sure to mention keeping PartnerPrivateBillingKey hidden.
 
 #### Submitting an Order via Braintree
+
+**TODO**
+
+ - do not show examples with imgmanip, show examples with image URLs
 
 The `orderSubmit` function `params` argument takes several values:
 
