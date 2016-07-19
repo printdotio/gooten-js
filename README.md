@@ -203,7 +203,7 @@ api.getProductVariants({productId: 43, countryCode: "US"}, function(err, result)
   // as an example,
   // loop through all the skus and write out their price
   result.ProductVariants.forEach(function(variant){
-    console.log(pv.Sku +" has a price of "+ pv.PriceInfo.FormattedPrice);
+    console.log(variant.Sku +" has a price of "+ variant.PriceInfo.FormattedPrice);
   });
 });
 ```
