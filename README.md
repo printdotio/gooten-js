@@ -16,7 +16,7 @@ What could it be in the future?
  - a "components" based approach 
  - more?
 
-### Goals
+## Goals
 
  - Full unit test coverage -- we will write it as we go!
  - Full documentation -- we will write it as we go!
@@ -28,7 +28,7 @@ What could it be in the future?
 
 Hopefully it doesn't need to be said, but **things should be loosely coupled.**
 
-### Roadmap
+## Roadmap
 
  - get a user's location
  - get products for the user location
@@ -57,7 +57,7 @@ Below are examples for each of the "core experiences."
 
 
 
-#### Setting Your Recipe Id (API Key)
+### Setting Your Recipe Id (API Key)
 
 **The very first step to using gooten-js is setting your recipe id**, so as to be authenticated with our servers. 
 
@@ -72,7 +72,7 @@ After that, all requests will use the specified recipe id.
 
 
 
-#### Getting A User's Location
+### Getting A User's Location
 
 Getting a user's home/ship-to country is incredibly important. The ship-to country is used for:
 
@@ -97,7 +97,7 @@ api.getUserLocation(function(err, countryCode){
 
 
 
-#### Getting a List of Products
+### Getting a List of Products
 
 Now that we have the user's country, we can call out to the API for a list of products. 
 
@@ -175,7 +175,7 @@ Now that we have a list of products that are available, we ping the API to see w
 
 
 
-#### Getting a List of SKUs (Product Variants) for a Product
+### Getting a List of SKUs (Product Variants) for a Product
 
 It's easy to get a list of available SKUs for a product, after you have the a product's Id from our products endpoint (above).
 
@@ -272,7 +272,7 @@ So you receive back an array of product variants, which conttain the `Sku` field
 
 
 
-#### Getting a List of Templates For a SKU
+### Getting a List of Templates For a SKU
 
 "Templates" are data that describe how to build a UI for a SKU. For example, a template conains information such as:
 
@@ -282,7 +282,7 @@ So you receive back an array of product variants, which conttain the `Sku` field
  - assets (images) to build a more realistic representation of what the final product would look like, with their coordinates
 
 
-The `getProductVariants` function `params` argument takes 1 value:
+The `getTemplates` function `params` argument takes 1 value:
 
  - `sku` - required - the SKU you are requesting templates for
 
@@ -290,12 +290,11 @@ Example:
 
 ```js
 // get templates for a sku
-api.getProducts({sku: "CanvsWrp-BlkWrp-5x7"}, function(err, result){
+api.getTemplates({sku: "CanvsWrp-BlkWrp-5x7"}, function(err, result){
   // as an example,
-  // loop through all the available products and write out their names
-  result.Products.forEach(function(product){
-    if(!product.IsComingSoon)
-      console.log(product.Name);
+  // loop through all the available templates and write out their names
+  result.Options.forEach(function(template){
+      console.log(template.Name);
   });
 });
 ```
@@ -365,7 +364,9 @@ Which would yield the response:
 }
 ```
 
-##### Parsing the template data
+
+
+#### Parsing the Template Data
 
 The response contains an array of templates.
 
@@ -385,7 +386,7 @@ So once you have a template, in order to draw the UI, one would:
  - set up your drawing to work only within the `Image` layer coords
 
 
-#### Getting A SKU's Required Images
+### Getting A SKU's Required Images
 
 **TODO**
 
@@ -453,7 +454,7 @@ This yields the response:
 Here we have the list with sizes of images which will be submitted to printer.
 
 
-#### Getting a Total For Items in A Cart
+### Getting a Total For Items in A Cart
 
 **TODO**
 
@@ -507,7 +508,12 @@ This yields the response:
 
  - show example with coupon[s]
 
-#### Getting Shipping Options For a Cart
+
+
+
+
+
+### Getting Shipping Options For a Cart
 
 The `getTotal` function `params` argument takes several values:
 
@@ -654,17 +660,33 @@ This yields the response:
  - explain which ID is used on order submission
  - explain grouping of items together
 
-#### Submitting an Order via Paypal
+
+
+
+
+
+### Submitting an Order via Paypal
 
 TODO
 
-#### Submitting an Order on Credit
+
+
+
+
+
+### Submitting an Order on Credit
 
 TODO
 
 Be sure to mention keeping PartnerPrivateBillingKey hidden.
 
-#### Submitting an Order via Braintree
+
+
+
+
+
+
+### Submitting an Order via Braintree
 
 **TODO**
 
@@ -761,12 +783,12 @@ This yields the response:
 It contains Id of submitted order.
 
 
-#### Getting an Order's Info
+### Getting an Order's Info
 
 TODO (using the GET /orders API)
 
 
-#### Creating An Editor
+### Creating An Editor
 
 First, `GTN.ui.Container` is the object/service that is the editor. We use the words "editor" and "container" interchangeably. 
 
