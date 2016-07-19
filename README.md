@@ -492,6 +492,10 @@ This yields the response:
 }
 ```
 
+**TODO**
+
+ - show example with coupon[s]
+
 #### Getting Shipping Options For a Cart
 
 The `getTotal` function `params` argument takes several values:
@@ -550,8 +554,7 @@ This yields the response:
             "CurrencyDigits": 2
           },
           "Id": 1,
-          "EstBusinessDaysTilDelivery": 12,
-          "MethodId": 3
+          "EstBusinessDaysTilDelivery": 12
         },
         {
           "CarrierName": "Expedited",
@@ -565,8 +568,7 @@ This yields the response:
             "CurrencyDigits": 2
           },
           "Id": 2,
-          "EstBusinessDaysTilDelivery": 4,
-          "MethodId": 5
+          "EstBusinessDaysTilDelivery": 4
         },
         {
           "CarrierName": "Overnight",
@@ -580,8 +582,7 @@ This yields the response:
             "CurrencyDigits": 2
           },
           "Id": 3,
-          "EstBusinessDaysTilDelivery": 2,
-          "MethodId": 7
+          "EstBusinessDaysTilDelivery": 2
         }
       ]
     },
@@ -602,8 +603,7 @@ This yields the response:
             "CurrencyDigits": 2
           },
           "Id": 2,
-          "EstBusinessDaysTilDelivery": 4,
-          "MethodId": 5
+          "EstBusinessDaysTilDelivery": 4
         },
         {
           "CarrierName": "Standard",
@@ -617,8 +617,7 @@ This yields the response:
             "CurrencyDigits": 2
           },
           "Id": 1,
-          "EstBusinessDaysTilDelivery": 12,
-          "MethodId": 3
+          "EstBusinessDaysTilDelivery": 12
         },
         {
           "CarrierName": "Overnight",
@@ -632,8 +631,7 @@ This yields the response:
             "CurrencyDigits": 2
           },
           "Id": 3,
-          "EstBusinessDaysTilDelivery": 2,
-          "MethodId": 7
+          "EstBusinessDaysTilDelivery": 2
         }
       ]
     }
@@ -641,7 +639,21 @@ This yields the response:
 }
 ```
 
-#### Submitting an Order
+**TODO**
+ - explain which ID is used on order submission
+ - explain grouping of items together
+
+#### Submitting an Order via Paypal
+
+TODO
+
+#### Submitting an Order on Credit
+
+TODO
+
+Be sure to mention keeping PartnerPrivateBillingKey hidden.
+
+#### Submitting an Order via Braintree
 
 The `orderSubmit` function `params` argument takes several values:
 
@@ -667,7 +679,8 @@ The `orderSubmit` function `params` argument takes several values:
  - `ShipCarrierMethodId` - required - Id of ship carrier method
  - `Quantity` - required - number of items with this SKU
  - `Images` - required - list of images which contains `Index` of image and `ManipCommand`
- 
+
+
 `Payment` section:
  - `BraintreeEncryptedCCNumber` - required - encrypted card number
  - `BraintreeEncryptedCCExpDate` - required - encrypted valid date of card
@@ -731,6 +744,11 @@ This yields the response:
 ```
 
 It contains Id of submitted order.
+
+
+#### Getting an Order's Info
+
+TODO (using the GET /orders API)
 
 
 #### Creating An Editor
