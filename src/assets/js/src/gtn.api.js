@@ -81,29 +81,38 @@ GTN.Api = function(util, config) {
         };
 
         this.getRequiredImages = function (params, cb) {
-            util.asserts.notNullOrUndefined("template", params.template);
+            util.asserts.notNullOrUndefined("sku", params.sku);
             self.getTemplates(params, function(err, templates){
                 var template = templates.Options.find(function(template){
-                    return template.Name === params.template;
+                    return template.Name === "Single";
                 });
                 var result = [];
+                if(!template || !template.Spaces){
+                  console.error("There does not appear to be a single template for " + params.sku+". Please contact partnersupport@gooten.com");
+                  return;   
+                }
                 template.Spaces.forEach(function(space){
                     space.Layers.forEach(function(layer) {
                         if(layer.Type !== 'Image')
                             return null;
-                        result.push({
-                            X1: layer.X1,
-                            Y1: layer.Y1,
-                            X2: layer.X2,
-                            Y2: layer.Y2
-                        });
+                        if(!util.isUndefined(layer.FinalX1)) {
+                            result.push({
+                                width: layer.FinalX2 - layer.FinalX1,
+                                height: layer.FinalY2 - layer.FinalY1
+                            });    
+                        } else {
+                            result.push({
+                                width: layer.X2 - layer.X1,
+                                height: layer.Y2 - layer.Y1
+                            });
+                        }
                     });
                 });
-                cb(err, result)
-            })
+                return cb(err, result)
+            });
         };
 
-        this.getTotal = function(data, cb) {
+        this.getPrices = function(data, cb) {
             util.asserts.notNullOrUndefined("cb", cb);
 
             util.asserts.notNullOrUndefined("ShipToAddress.countryCode", data.ShipToAddress.countryCode);

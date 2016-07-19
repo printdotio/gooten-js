@@ -127,7 +127,7 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-			api.getRequiredImages({sku: "CanvsWrp-BlkWrp-5x7", template: '3x4_5_Top_Rectangle'},function(error,result){
+			api.getRequiredImages({sku: "CanvsWrp-BlkWrp-5x7"},function(error,result){
 				res = result;
 				err = error;
 			});
@@ -137,7 +137,8 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			expect(err).toBeUndefined();
-			expect(res.length).toBe(5);
+			expect(res.length).toBe(1);
+			expect(res[0].width).toBe(2100);
 		});
     });
 
@@ -149,7 +150,7 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-			api.getRequiredImages({sku: "LayflatBook-ImgWrpCover-6x6-80CoverSterling-Glossy-20", template: 'Single Black Spine'},function(error,result){
+			api.getRequiredImages({sku: "Apparel-DTG-Hoodie-AA-5495-L-White-Unisex-CFCB"},function(error,result){
 				res = result;
 				err = error;
 			});
@@ -159,7 +160,7 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			expect(err).toBeUndefined();
-			expect(res.length).toBe(12);
+			expect(res.length).toBe(2);
 		});
     });
 
@@ -171,13 +172,14 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-			api.getTotal({
+			api.getPrices({
                 ShipToAddress: {countryCode: "US"},
                 Items: [
-                    {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 0, Quantity: 1},
-                    {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 0, Quantity: 1}
+                    {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 1, Quantity: 1},
+                    {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 1, Quantity: 1}
                 ]
             },function(error,result){
+            	dump(JSON.stringify(result))
 				res = result;
 				err = error;
 			});

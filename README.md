@@ -272,9 +272,55 @@ So you receive back an array of product variants, which conttain the `Sku` field
 
 
 
+
+### Getting A SKU's Required Images
+
+Without the correct sized images, an item will not be submitted to a printer. 
+
+The `getRequiredImages` function `params` argument takes 2 values:
+
+ - `sku` - required - the SKU you are requesting templates for
+ - `template` - required - the name of template to get images sizes
+
+Example:
+
+```js
+api.getRequiredImages(
+    {
+        sku: "CanvsWrp-BlkWrp-5x7"
+    },
+    function(error,result){
+        ...
+    }
+);
+```
+
+This yields the response:
+
+```js
+[
+  {
+    width:2100,
+    height:1500
+  }
+]
+```
+
+That sku's image should be 2100x1500. Easy!
+
+
+
+
+
+
+
+
+
+
+
 ### Getting a List of Templates For a SKU
 
-"Templates" are data that describe how to build a UI for a SKU. For example, a template conains information such as:
+This is a more advanced approach to the "getting a sku's required images" example above. "Templates" are data that describe how to build a UI for a SKU. For example, a template conains information such as:
 
  - how many images does one need to supply for a SKU?
  - what size images should one supply?
@@ -365,12 +411,11 @@ Which would yield the response:
 ```
 
 
-
 #### Parsing the Template Data
 
 The response contains an array of templates.
 
-A few notes on what the fields of a template mean:
+There is a lot going on here. A few notes on what the fields of a template mean:
 
  - `ImageUrl` is a nice icon of the template
  - `FinalX1`, etc is the coordinates of the image that should be cropped out of the UI and submitted
@@ -386,101 +431,43 @@ So once you have a template, in order to draw the UI, one would:
  - set up your drawing to work only within the `Image` layer coords
 
 
-### Getting A SKU's Required Images
 
-**TODO**
 
- - this should not take a template parameter. should only use "Single"
- - this should return width and height params, not X1X2Y1Y2
 
-Without the correct sized images, an item will not be submitted to a printer. 
 
-The `getRequiredImages` function `params` argument takes 2 values:
 
- - `sku` - required - the SKU you are requesting templates for
- - `template` - required - the name of template to get images sizes
-
-Example:
-
-```js
-api.getRequiredImages(
-    {
-        sku: "CanvsWrp-BlkWrp-5x7",
-        template: '3x4_5_Top_Rectangle'
-    },
-    function(error,result){
-        ...
-    }
-);
-```
-
-This yields the response:
-
-```
-[
-  {
-    "X1": 499,
-    "Y1": 499,
-    "X2": 2501,
-    "Y2": 1388
-  },
-  {
-    "X1": 499,
-    "Y1": 1437,
-    "X2": 963,
-    "Y2": 1901
-  },
-  {
-    "X1": 1012,
-    "Y1": 1437,
-    "X2": 1475,
-    "Y2": 1901
-  },
-  {
-    "X1": 1525,
-    "Y1": 1437,
-    "X2": 1988,
-    "Y2": 1901
-  },
-  {
-    "X1": 2037,
-    "Y1": 1437,
-    "X2": 2501,
-    "Y2": 1901
-  }
-]
-```
-
-Here we have the list with sizes of images which will be submitted to printer.
 
 
 ### Getting a Total For Items in A Cart
 
 **TODO**
 
- - where does shipping come from?
- - how to get taxes
- - passing in full address or partial address?
+ - show example with coupon[s]
 
-The `getTotal` function `params` argument takes several values:
+
+Once you have items you can get item, shipping, and tax information via one call to `getPrices`. 
+
+The `getPrices` function `params` argument takes several values:
 
  - `countryCode` - required - shipping 2-letter country code
  - `SKU` - required - SKU of product
  - `ShipCarrierMethodId` - required - Id of shipping method
  - `Quantity` - required - number of items with this SKU
 
+Its important to note that shipping prices can change based off of how much data you give us. For example, if you give us a full address that is in the US, you may get a different price than if you only passed in the `countryCode`. Thus, **where possible, pass in the entire address as often as possible**.
+
 Example:
 
 ```js
-api.getTotal(
+api.getPrices(
     {
         ShipToAddress: {
             countryCode: "US",
         }
     },
     Items: [
-            {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 0, Quantity: 1},
-            {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 0, Quantity: 1}
+            {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 1, Quantity: 1},
+            {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 1, Quantity: 1}
         ]
     }, function(error,result){
         ...
@@ -490,7 +477,7 @@ api.getTotal(
 
 This yields the response:
 
-```
+```js
 {
   "Items": {
     "Price": 85.05,
@@ -499,14 +486,19 @@ This yields the response:
     "CurrencyFormat": "${1}",
     "CurrencyDigits": 2
   },
+  "Shipping": {
+    "Price": 22.73,
+    "CurrencyCode": "USD",
+    "FormattedPrice": "$22.73",
+    "CurrencyFormat": "${1}",
+    "CurrencyDigits": 2
+  },
   "HadCouponApply": false,
   "HadError": false
 }
 ```
 
-**TODO**
 
- - show example with coupon[s]
 
 
 
