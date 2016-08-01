@@ -505,6 +505,7 @@ This yields the response:
 
 
 
+
 ### Getting Shipping Options For a Cart
 
 The `getTotal` function `params` argument takes several values:
@@ -657,9 +658,16 @@ This yields the response:
 
 
 
+
+
+
+
 ### Submitting an Order via Paypal
 
 TODO
+
+
+
 
 
 
@@ -671,6 +679,9 @@ TODO
 TODO
 
 Be sure to mention keeping PartnerPrivateBillingKey hidden.
+
+
+
 
 
 

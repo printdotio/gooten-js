@@ -513,16 +513,23 @@ GTN.util.copyArray = function(a){
 
 GTN.util.asserts = {};
 GTN.util.asserts.notNullOrUndefined = function(objName, obj){
-    console.assert(obj !== null && !GTN.util.isUndefined(obj), objName + " must not be null or undefined");
+    var test = obj !== null && !GTN.util.isUndefined(obj);
+    console.assert(test, objName + " must not be null or undefined");
+    return !test;
 };
 
 GTN.util.asserts.equals = function(objName, obj, expected) {
-  console.assert(obj === expected, objName + " must be equal to " + expected);
+  var test = obj === expected;
+  console.assert(test, objName + " must be equal to " + expected);
+  return !test;
 };
 
 GTN.util.asserts.moreThan = function(objName, obj, expected) {
-  console.assert(obj !== null && obj > expected, objName + " must be more than " + expected);
+  var test = obj !== null && obj > expected;
+  console.assert(test, objName + " must be more than " + expected);
+  return !test;
 };
+
 
 
 //// handle the receiving of HTML5 postMessage
