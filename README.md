@@ -508,7 +508,7 @@ This yields the response:
 
 ### Getting Shipping Options For a Cart
 
-The `getTotal` function `params` argument takes several values:
+The `getShippingOptions` function `params` argument takes several values:
 
  - `ShipToPostalCode` - required - postal code
  - `ShipToCountry` - required - 2-letter country code
