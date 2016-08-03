@@ -16,7 +16,7 @@ GTN.util.http.get = function(props, cb){
 	};
 
 	xhr.onload = function() {
-	    if (xhr.status === 200) {
+	    if (xhr.status >= 200 && xhr.status < 300) {
 	    	if(contentType === jsontype)
 	        	return cb(undef,JSON.parse(xhr.responseText));
 	        return cb(undef,xhr.responseText);
@@ -46,7 +46,7 @@ GTN.util.http.post = function(props, cb) {
     };
 
     xhr.onload = function() {
-        if (xhr.status === 200) {
+        if (xhr.status >= 200 && xhr.status < 300) {
         	if(contentType === jsontype)
             	return cb(undef,JSON.parse(xhr.responseText));
             return cb(undef,xhr.responseText);

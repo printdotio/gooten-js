@@ -9,7 +9,9 @@
 
     "js/src/gtn.config.js",
 
-    "js/src/gtn.api.js"
+    "js/src/gtn.api.js",
+
+    "js/lib/braintree.js"
   ],
   "tests":[
     "js/tests/gtn.api.tests.js",

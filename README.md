@@ -664,74 +664,44 @@ This yields the response:
 
 ### Submitting an Order via Paypal
 
-TODO
-
-
-
-
-
-
-
-
-
-### Submitting an Order on Credit
-
-TODO
-
-Be sure to mention keeping PartnerPrivateBillingKey hidden.
-
-
-
-
-
-
-
-
-
-
-### Submitting an Order via Braintree
-
-**TODO**
-
- - do not show examples with imgmanip, show examples with image URLs
-
-The `orderSubmit` function `params` argument takes several values:
+The `orderSubmitPaypal` function `params` argument takes several values:
 
 `ShipToAddress` section:
- - `firstName` - required - first name of user
- - `lastName` - required - last name of user
- - `line1` - required - shipping address
- - `city` - required - shipping city
- - `state` - required - shipping state if exists
- - `postalCode` - required - shipping postal code
- - `countryCode` - required - shipping 2-letter country code
- - `email` - required - user's email
- - `phone` - required - users' phone
+ - `firstName` - first name of user
+ - `lastName` - last name of user
+ - `line1` - shipping address
+ - `city` - shipping city
+ - `state` - shipping state if exists
+ - `postalCode` - shipping postal code
+ - `countryCode` - shipping 2-letter country code
+ - `email` - user's email
+ - `phone` - users' phone
 
 `BillingAddress` section:
- - `firstName` - required - first name of user
- - `lastName` - required - last name of user
- - `postalCode` - required - shipping postal code
- - `countryCode` - required - shipping 2-letter country code
+ - `firstName` - first name of user
+ - `lastName` - last name of user
+ - `postalCode` - shipping postal code
+ - `countryCode` - shipping 2-letter country code
 
 `Items` section:
- - `SKU` - required - SKU of product
- - `ShipCarrierMethodId` - required - Id of ship carrier method
- - `Quantity` - required - number of items with this SKU
- - `Images` - required - list of images which contains `Index` of image and `ManipCommand`
+ - `SKU` - SKU of product
+ - `ShipCarrierMethodId` - Id of ship carrier method
+ - `Quantity` - number of items with this SKU
+ - `Images` - list of images which contains `Index` of image and `Url`
 
 
 `Payment` section:
- - `BraintreeEncryptedCCNumber` - required - encrypted card number
- - `BraintreeEncryptedCCExpDate` - required - encrypted valid date of card
- - `BraintreeEncryptedCCV` - required - encripted CCV number
- - `CurrencyCode` - required - currency code
- - `Total` - required - order total
+ - `BraintreeKey` - braintree key to encrypt card info
+ - `BraintreeCCNumber` - valid card number
+ - `BraintreeCCExpDate` - valid date of card
+ - `BraintreeCCV` - CCV number
+ - `CurrencyCode` - currency code
+ - `Total` - order total
 
 Example:
 
 ```js
-api.orderSubmit({
+api.orderSubmitPaypal({
                 ShipToAddress: {
                     firstName: "Keith", 
                     lastName: "Richards", 
@@ -753,20 +723,227 @@ api.orderSubmit({
                         ShipCarrierMethodId: 1, 
                         Quantity: 1, 
                         Images:[
-                            {Index: 0, ManipCommand: '{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=+450.00078260869566+450.00078260869566,"},"index":0},{"name":"convert","args":{"format":"jpg"},"index":999},{"name":"quality","args":{"value":100},"index":0},{"name":"resample2","args":{"dpi":300,"units":"PixelsPerInch"},"index":0},{"name":"crop","args":{"x1":450,"x2":7650,"y1":450,"y2":5850},"index":997}],"layers":[{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=-626.0912608695652+0"},"index":0}],"layers":[{"name":"image","commands":[{"name":"resize","args":{"height":5400.005869565217,"width":8452.19152173913},"index":0}],"layers":[],"settings":{"uri":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B","printUrl":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B"}}],"settings":{"width":7200.00195652174,"height":5400.005869565217,"index":0,"color":"#000000"}}],"settings":{"width":8100,"height":6300,"color":"#000000"}}'}
+                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
                     ]},
                     {
                         SKU: "Framed_12x18_Black_Lustre", 
                         ShipCarrierMethodId: 1, 
                         Quantity: 1, 
                         Images:[
-                            {Index: 0, ManipCommand: '{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=+1050.0000000000002+1050.0000000000002,"},"index":0},{"name":"convert","args":{"format":"jpg"},"index":999},{"name":"quality","args":{"value":100},"index":0},{"name":"resample2","args":{"dpi":300,"units":"PixelsPerInch"},"index":0},{"name":"crop","args":{"x1":1050,"x2":6450,"y1":1050,"y2":4650},"index":997}],"layers":[{"name":"canvas","commands":[{"name":"combine","args":{"map":"0=-117.3913043478261+0"},"index":0}],"layers":[{"name":"image","commands":[{"name":"resize","args":{"height":3600.0000000000005,"width":5634.782608695653},"index":0}],"layers":[],"settings":{"uri":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B","printUrl":"https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/10981197_859464497450312_265769196419833225_n.jpg?oh=305626407b8cbf42c9da68b658e61c1d&oe=5835FF2B"}}],"settings":{"width":5400,"height":3600.0000000000005,"index":0,"color":"#000000"}}],"settings":{"width":7500,"height":5700,"color":"#000000"}}'}
+                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
                     ]}
                 ],
                 Payment: {
-                    BraintreeEncryptedCCNumber: "$bt4|javascript_1_3_10$ ...",
-                    BraintreeEncryptedCCExpDate: "$bt4|javascript_1_3_10$FMA9OkM4Z9u8bj9 ...",
-                    BraintreeEncryptedCCV: "$bt4|javascript_1_3_10$UlauiA0BD42AZdw...",
+                    CurrencyCode: "USD",
+                    Total: "107.78"
+                }
+            },function(error,result){
+			    ...
+			});
+```
+
+This yields the response:
+
+```
+{
+  "Id": "7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec"
+}
+```
+
+It contains Id of submitted order with special flag which indicates that order waits payment notification from PayPal.
+
+Usually it make sense to create and submit hidden form like this:
+
+```html
+<form class="js-paypal-form" style="display:none;" action="... place PayPal/Sandbox url here ..." method="post">
+    <input type="hidden" name="cmd" value="_xclick" />
+    <input type="hidden" name="business" value="...email..." />
+    <input type="hidden" name="item_name" value="Printed Items">
+    <input type="hidden" name="cbt" value="Return to the site you came from" />
+    <input type="hidden" name="rm" value="1" />
+    <input type="hidden" name="image_url" value="...logo url..." />
+    <input type="hidden" name="currency_code" value="...currency code..." />
+    <input type="hidden" name="amount" value="...total value..." />
+    <input type="hidden" name="no_shipping" value="1" />
+    <input type="hidden" name="return" value="...return url..." />
+    <input type="hidden" name="invoice" value="...Id of order from response - in example above: 7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec..." />
+    <input type="hidden" name="notify_url" value="https://api.print.io/PayPal" />
+    <input type="submit" />
+</form>
+```
+after payment complete PayPal will notify our API server and we remove pre-payment flag from submitted order.
+
+
+
+### Submitting an Order on Credit
+
+
+The `orderSubmitOnCredit` function `params` argument takes several values:
+
+`ShipToAddress` section:
+ - `firstName` - first name of user
+ - `lastName` - last name of user
+ - `line1` - shipping address
+ - `city` - shipping city
+ - `state` - shipping state if exists
+ - `postalCode` - shipping postal code
+ - `countryCode` - shipping 2-letter country code
+ - `email` - user's email
+ - `phone` - users' phone
+
+`BillingAddress` section:
+ - `firstName` - first name of user
+ - `lastName` - last name of user
+ - `postalCode` - shipping postal code
+ - `countryCode` - shipping 2-letter country code
+
+`Items` section:
+ - `SKU` - SKU of product
+ - `ShipCarrierMethodId` - Id of ship carrier method
+ - `Quantity` - number of items with this SKU
+ - `Images` - list of images which contains `Index` of image and `Url`
+
+
+`Payment` section:
+ - `PartnerBillingKey` - partner's private billing key
+ - `CurrencyCode` - currency code
+ - `Total` - order total
+
+Example:
+
+```js
+api.orderSubmitOnCredit({
+                ShipToAddress: {
+                    firstName: "Keith", 
+                    lastName: "Richards", 
+                    line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
+                    city: "BEVERLY HILLS", 
+                    state: "CA", 
+                    postalCode: "90210", 
+                    countryCode: "US", 
+                    email: "keith@rollingstones.uk", 
+                    phone: "2233322233322"},
+                BillingAddress: {
+                    firstName: "Keith", 
+                    lastName: "Richards", 
+                    postalCode: "90210", 
+                    countryCode: "US"},
+                Items: [
+                    {
+                        SKU: "CanvsWrp-BlkWrp-18x24", 
+                        ShipCarrierMethodId: 1, 
+                        Quantity: 1, 
+                        Images:[
+                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+                    ]},
+                    {
+                        SKU: "Framed_12x18_Black_Lustre", 
+                        ShipCarrierMethodId: 1, 
+                        Quantity: 1, 
+                        Images:[
+                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+                    ]}
+                ],
+                Payment: {
+                    PartnerBillingKey: "123",
+                    CurrencyCode: "USD",
+                    Total: "107.78"
+                }
+            },function(error,result){
+			    ...
+			});
+```
+
+This yields the response:
+
+```
+{
+  "Id": "7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec"
+}
+```
+
+It contains Id of submitted order.
+
+Please make sure that you keep your PartnerBillingKey hidden.
+
+
+### Submitting an Order via Braintree
+
+
+The `orderSubmitBraintree` function `params` argument takes several values:
+
+`ShipToAddress` section:
+ - `firstName` - first name of user
+ - `lastName` - last name of user
+ - `line1` - shipping address
+ - `city` - shipping city
+ - `state` - shipping state if exists
+ - `postalCode` - shipping postal code
+ - `countryCode` - shipping 2-letter country code
+ - `email` - user's email
+ - `phone` - users' phone
+
+`BillingAddress` section:
+ - `firstName` - first name of user
+ - `lastName` - last name of user
+ - `postalCode` - shipping postal code
+ - `countryCode` - shipping 2-letter country code
+
+`Items` section:
+ - `SKU` - SKU of product
+ - `ShipCarrierMethodId` - Id of ship carrier method
+ - `Quantity` - number of items with this SKU
+ - `Images` - list of images which contains `Index` of image and `Url`
+
+
+`Payment` section:
+ - `BraintreeKey` - braintree key to encrypt card info
+ - `BraintreeCCNumber` - valid card number
+ - `BraintreeCCExpDate` - valid date of card
+ - `BraintreeCCV` - CCV number
+ - `CurrencyCode` - currency code
+ - `Total` - order total
+
+Example:
+
+```js
+api.orderSubmitBraintree({
+                ShipToAddress: {
+                    firstName: "Keith", 
+                    lastName: "Richards", 
+                    line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
+                    city: "BEVERLY HILLS", 
+                    state: "CA", 
+                    postalCode: "90210", 
+                    countryCode: "US", 
+                    email: "keith@rollingstones.uk", 
+                    phone: "2233322233322"},
+                BillingAddress: {
+                    firstName: "Keith", 
+                    lastName: "Richards", 
+                    postalCode: "90210", 
+                    countryCode: "US"},
+                Items: [
+                    {
+                        SKU: "CanvsWrp-BlkWrp-18x24", 
+                        ShipCarrierMethodId: 1, 
+                        Quantity: 1, 
+                        Images:[
+                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+                    ]},
+                    {
+                        SKU: "Framed_12x18_Black_Lustre", 
+                        ShipCarrierMethodId: 1, 
+                        Quantity: 1, 
+                        Images:[
+                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+                    ]}
+                ],
+                Payment: {
+                    BraintreeKey: "MIIBCgKCAQEA7Dt2 ...",
+                    BraintreeCCNumber: "4111111111111111",
+                    BraintreeCCExpDate: "10/20",
+                    BraintreeCCV: "123",
                     CurrencyCode: "USD",
                     Total: "107.78"
                 }
