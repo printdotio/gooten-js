@@ -216,7 +216,7 @@ Note we added `productId` to the request above.
 
 This yields the response:
 
-```
+```json
 {
   "ProductVariants": [
     {
@@ -354,7 +354,7 @@ This is equivalent to doing:
 
 Which would yield the response:
 
-```
+```json
 {
   "Options": [
     {
@@ -477,7 +477,7 @@ api.getPrices(
 
 This yields the response:
 
-```js
+```json
 {
   "Items": {
     "Price": 85.05,
@@ -544,7 +544,7 @@ api.getShippingOptions({
 
 This yields the response:
 
-```
+```json
 {
   "Result": [
     {
@@ -744,7 +744,7 @@ api.postOrderPaypal({
 
 This yields the response:
 
-```
+```json
 {
   "Id": "7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec"
 }
@@ -856,7 +856,7 @@ api.postOrderOnCredit({
 
 This yields the response:
 
-```
+```json
 {
   "Id": "7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec"
 }
@@ -954,7 +954,7 @@ api.postOrderBraintree({
 
 This yields the response:
 
-```
+```json
 {
   "Id": "7-f0f4ffd3-2582-48c5-9d10-4c7c625e1fec"
 }
@@ -1104,54 +1104,54 @@ var exportStrategies = GTN.util.di.get("GTN.ui.containerFns.exportStrategies");
 // pass into the template mapper the single template data
 // straight from the API
 var shirtTemplate = {
-      "Spaces": [
+  "Spaces": [
+    {
+      "Id": "C1B69",
+      "Index": 1,
+      "FinalX1": 2589,
+      "FinalX2": 7089,
+      "FinalY1": 1603,
+      "FinalY2": 7303,
+      "DefaultRotation": 0,
+      "Description": "Front",
+      "Layers": [
         {
-          "Id": "C1B69",
-          "Index": 1,
-          "FinalX1": 2589,
-          "FinalX2": 7089,
-          "FinalY1": 1603,
-          "FinalY2": 7303,
-          "DefaultRotation": 0,
-          "Description": "Front",
-          "Layers": [
-            {
-              "Id": "90106",
-              "Type": "Design",
-              "ZIndex": 0,
-              "X1": 0,
-              "X2": 9340,
-              "Y1": 0,
-              "Y2": 11010,
-              "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Background/Front/DT6000_Black_Background_Front.png",
-              "IncludeInPrint": false
-            },
-            {
-              "Id": "F52EB",
-              "Type": "Image",
-              "ZIndex": 1,
-              "X1": 2589,
-              "X2": 7089,
-              "Y1": 1603,
-              "Y2": 7303,
-              "ImageFill": "CanFill",
-              "IncludeInPrint": true
-            },
-            {
-              "Id": "DD7A1",
-              "Type": "Design",
-              "ZIndex": 2,
-              "X1": 0,
-              "X2": 9340,
-              "Y1": 0,
-              "Y2": 11010,
-              "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Overlay/Front/DT6000_Black_Front_Overlay.png",
-              "IncludeInPrint": false
-            }
-          ]
+          "Id": "90106",
+          "Type": "Design",
+          "ZIndex": 0,
+          "X1": 0,
+          "X2": 9340,
+          "Y1": 0,
+          "Y2": 11010,
+          "BackgroundImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Background/Front/DT6000_Black_Background_Front.png",
+          "IncludeInPrint": false
+        },
+        {
+          "Id": "F52EB",
+          "Type": "Image",
+          "ZIndex": 1,
+          "X1": 2589,
+          "X2": 7089,
+          "Y1": 1603,
+          "Y2": 7303,
+          "ImageFill": "CanFill",
+          "IncludeInPrint": true
+        },
+        {
+          "Id": "DD7A1",
+          "Type": "Design",
+          "ZIndex": 2,
+          "X1": 0,
+          "X2": 9340,
+          "Y1": 0,
+          "Y2": 11010,
+          "OverlayImageUrl": "https://az412349.vo.msecnd.net/product-tshirts/Overlay/Front/DT6000_Black_Front_Overlay.png",
+          "IncludeInPrint": false
         }
       ]
-    };
+    }
+  ]
+};
 
 // we pass in the template
 var tdata = templateMapper.toContainerData({
