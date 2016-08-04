@@ -664,7 +664,7 @@ This yields the response:
 
 ### Submitting an Order via Paypal
 
-The `orderSubmitPaypal` function `params` argument takes several values:
+The `postOrderPaypal` function `params` argument takes several values:
 
 `ShipToAddress` section:
  - `firstName` - first name of user
@@ -701,45 +701,45 @@ The `orderSubmitPaypal` function `params` argument takes several values:
 Example:
 
 ```js
-api.orderSubmitPaypal({
-                ShipToAddress: {
-                    firstName: "Keith", 
-                    lastName: "Richards", 
-                    line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
-                    city: "BEVERLY HILLS", 
-                    state: "CA", 
-                    postalCode: "90210", 
-                    countryCode: "US", 
-                    email: "keith@rollingstones.uk", 
-                    phone: "2233322233322"},
-                BillingAddress: {
-                    firstName: "Keith", 
-                    lastName: "Richards", 
-                    postalCode: "90210", 
-                    countryCode: "US"},
-                Items: [
-                    {
-                        SKU: "CanvsWrp-BlkWrp-18x24", 
-                        ShipCarrierMethodId: 1, 
-                        Quantity: 1, 
-                        Images:[
-                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
-                    ]},
-                    {
-                        SKU: "Framed_12x18_Black_Lustre", 
-                        ShipCarrierMethodId: 1, 
-                        Quantity: 1, 
-                        Images:[
-                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
-                    ]}
-                ],
-                Payment: {
-                    CurrencyCode: "USD",
-                    Total: "107.78"
-                }
-            },function(error,result){
-			    ...
-			});
+api.postOrderPaypal({
+    ShipToAddress: {
+        firstName: "Keith", 
+        lastName: "Richards", 
+        line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
+        city: "BEVERLY HILLS", 
+        state: "CA", 
+        postalCode: "90210", 
+        countryCode: "US", 
+        email: "keith@rollingstones.uk", 
+        phone: "2233322233322"},
+    BillingAddress: {
+        firstName: "Keith", 
+        lastName: "Richards", 
+        postalCode: "90210", 
+        countryCode: "US"},
+    Items: [
+        {
+            SKU: "CanvsWrp-BlkWrp-18x24", 
+            ShipCarrierMethodId: 1, 
+            Quantity: 1, 
+            Images:[
+                {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+        ]},
+        {
+            SKU: "Framed_12x18_Black_Lustre", 
+            ShipCarrierMethodId: 1, 
+            Quantity: 1, 
+            Images:[
+                {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+        ]}
+    ],
+    Payment: {
+        CurrencyCode: "USD",
+        Total: "107.78"
+    }
+},function(error,result){
+    ...
+});
 ```
 
 This yields the response:
@@ -778,7 +778,7 @@ after payment complete PayPal will notify our API server and we remove pre-payme
 ### Submitting an Order on Credit
 
 
-The `orderSubmitOnCredit` function `params` argument takes several values:
+The `postOrderOnCredit` function `params` argument takes several values:
 
 `ShipToAddress` section:
  - `firstName` - first name of user
@@ -812,46 +812,46 @@ The `orderSubmitOnCredit` function `params` argument takes several values:
 Example:
 
 ```js
-api.orderSubmitOnCredit({
-                ShipToAddress: {
-                    firstName: "Keith", 
-                    lastName: "Richards", 
-                    line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
-                    city: "BEVERLY HILLS", 
-                    state: "CA", 
-                    postalCode: "90210", 
-                    countryCode: "US", 
-                    email: "keith@rollingstones.uk", 
-                    phone: "2233322233322"},
-                BillingAddress: {
-                    firstName: "Keith", 
-                    lastName: "Richards", 
-                    postalCode: "90210", 
-                    countryCode: "US"},
-                Items: [
-                    {
-                        SKU: "CanvsWrp-BlkWrp-18x24", 
-                        ShipCarrierMethodId: 1, 
-                        Quantity: 1, 
-                        Images:[
-                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
-                    ]},
-                    {
-                        SKU: "Framed_12x18_Black_Lustre", 
-                        ShipCarrierMethodId: 1, 
-                        Quantity: 1, 
-                        Images:[
-                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
-                    ]}
-                ],
-                Payment: {
-                    PartnerBillingKey: "123",
-                    CurrencyCode: "USD",
-                    Total: "107.78"
-                }
-            },function(error,result){
-			    ...
-			});
+api.postOrderOnCredit({
+    ShipToAddress: {
+        firstName: "Keith", 
+        lastName: "Richards", 
+        line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
+        city: "BEVERLY HILLS", 
+        state: "CA", 
+        postalCode: "90210", 
+        countryCode: "US", 
+        email: "keith@rollingstones.uk", 
+        phone: "2233322233322"},
+    BillingAddress: {
+        firstName: "Keith", 
+        lastName: "Richards", 
+        postalCode: "90210", 
+        countryCode: "US"},
+    Items: [
+        {
+            SKU: "CanvsWrp-BlkWrp-18x24", 
+            ShipCarrierMethodId: 1, 
+            Quantity: 1, 
+            Images:[
+                {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+        ]},
+        {
+            SKU: "Framed_12x18_Black_Lustre", 
+            ShipCarrierMethodId: 1, 
+            Quantity: 1, 
+            Images:[
+                {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+        ]}
+    ],
+    Payment: {
+        PartnerBillingKey: "123",
+        CurrencyCode: "USD",
+        Total: "107.78"
+    }
+},function(error,result){
+    ...
+});
 ```
 
 This yields the response:
@@ -870,7 +870,7 @@ Please make sure that you keep your PartnerBillingKey hidden.
 ### Submitting an Order via Braintree
 
 
-The `orderSubmitBraintree` function `params` argument takes several values:
+The `postOrderBraintree` function `params` argument takes several values:
 
 `ShipToAddress` section:
  - `firstName` - first name of user
@@ -907,49 +907,49 @@ The `orderSubmitBraintree` function `params` argument takes several values:
 Example:
 
 ```js
-api.orderSubmitBraintree({
-                ShipToAddress: {
-                    firstName: "Keith", 
-                    lastName: "Richards", 
-                    line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
-                    city: "BEVERLY HILLS", 
-                    state: "CA", 
-                    postalCode: "90210", 
-                    countryCode: "US", 
-                    email: "keith@rollingstones.uk", 
-                    phone: "2233322233322"},
-                BillingAddress: {
-                    firstName: "Keith", 
-                    lastName: "Richards", 
-                    postalCode: "90210", 
-                    countryCode: "US"},
-                Items: [
-                    {
-                        SKU: "CanvsWrp-BlkWrp-18x24", 
-                        ShipCarrierMethodId: 1, 
-                        Quantity: 1, 
-                        Images:[
-                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
-                    ]},
-                    {
-                        SKU: "Framed_12x18_Black_Lustre", 
-                        ShipCarrierMethodId: 1, 
-                        Quantity: 1, 
-                        Images:[
-                            {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
-                    ]}
-                ],
-                Payment: {
-                    BraintreeKey: "MIIBCgKCAQEA7Dt2 ...",
-                    BraintreeCCNumber: "4111111111111111",
-                    BraintreeCCExpDate: "10/20",
-                    BraintreeCCV: "123",
-                    CurrencyCode: "USD",
-                    Total: "107.78"
-                }
-            },function(error,result){
-			    ...
-			});
+api.postOrderBraintree({
+    ShipToAddress: {
+        firstName: "Keith", 
+        lastName: "Richards", 
+        line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", 
+        city: "BEVERLY HILLS", 
+        state: "CA", 
+        postalCode: "90210", 
+        countryCode: "US", 
+        email: "keith@rollingstones.uk", 
+        phone: "2233322233322"},
+    BillingAddress: {
+        firstName: "Keith", 
+        lastName: "Richards", 
+        postalCode: "90210", 
+        countryCode: "US"},
+    Items: [
+        {
+            SKU: "CanvsWrp-BlkWrp-18x24", 
+            ShipCarrierMethodId: 1, 
+            Quantity: 1, 
+            Images:[
+                {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+        ]},
+        {
+            SKU: "Framed_12x18_Black_Lustre", 
+            ShipCarrierMethodId: 1, 
+            Quantity: 1, 
+            Images:[
+                {Index: 0, Url: "http://dpcdn.500px.org/535/d1f05f91178b8fd71469f003e29bfd04abca640e/2048.jpg"}
+        ]}
+    ],
+    Payment: {
+        BraintreeKey: "MIIBCgKCAQEA7Dt2 ...",
+        BraintreeCCNumber: "4111111111111111",
+        BraintreeCCExpDate: "10/20",
+        BraintreeCCV: "123",
+        CurrencyCode: "USD",
+        Total: "107.78"
+    }
+},function(error,result){
+    ...
+});
 ```
 
 This yields the response:
@@ -965,8 +965,117 @@ It contains Id of submitted order.
 
 ### Getting an Order's Info
 
-TODO (using the GET /orders API)
+The `getOrder` function `params` argument takes only one required value - the Id of order.
 
+Example:
+
+```js
+api.getOrder(
+    {Id: "13-cdc4b014-bafc-4681-b0e0-7265d2c11aa1"},
+    function(error,result){
+});
+
+```
+
+This yields the response:
+
+```
+{
+  "Id": "13-cdc4b014-bafc-4681-b0e0-7265d2c11aa1",
+  "NiceId": "Richa13-cd",
+  "SourceId": "13-cdc4b014-bafc-4681-b0e0-7265d2c11aa1",
+  "Items": [
+    {
+      "Sku": "CanvsWrp-BlkWrp-18x24",
+      "ProductId": 43,
+      "Product": "Canvas Wraps",
+      "Quantity": 1,
+      "Status": "Test",
+      "Price": {
+        "Price": 30.27,
+        "CurrencyCode": "USD",
+        "FormattedPrice": "$30.27",
+        "CurrencyFormat": "${1}",
+        "CurrencyDigits": 2
+      },
+      "DiscountAmount": {
+        "Price": 0.00,
+        "CurrencyCode": "USD",
+        "FormattedPrice": "$0.00",
+        "CurrencyFormat": "${1}",
+        "CurrencyDigits": 2
+      },
+      "Meta": {
+        
+      },
+      "Shipments": [
+        
+      ]
+    },
+    {
+      "Sku": "Framed_12x18_Black_Lustre",
+      "ProductId": 41,
+      "Product": "Framed Prints",
+      "Quantity": 1,
+      "Status": "Test",
+      "Price": {
+        "Price": 54.78,
+        "CurrencyCode": "USD",
+        "FormattedPrice": "$54.78",
+        "CurrencyFormat": "${1}",
+        "CurrencyDigits": 2
+      },
+      "DiscountAmount": {
+        "Price": 0.00,
+        "CurrencyCode": "USD",
+        "FormattedPrice": "$0.00",
+        "CurrencyFormat": "${1}",
+        "CurrencyDigits": 2
+      },
+      "Meta": {
+        
+      },
+      "Shipments": [
+        
+      ]
+    }
+  ],
+  "Total": {
+    "Price": 107.78,
+    "CurrencyCode": "USD",
+    "FormattedPrice": "$107.78",
+    "CurrencyFormat": "${1}",
+    "CurrencyDigits": 2
+  },
+  "ShippingTotal": {
+    "Price": 22.73,
+    "CurrencyCode": "USD",
+    "FormattedPrice": "$22.73",
+    "CurrencyFormat": "${1}",
+    "CurrencyDigits": 2
+  },
+  "ShippingAddress": {
+    "FirstName": "Keith",
+    "LastName": "Richards",
+    "Line1": "1023 N ROXBURY DR BEVERLY HILLS CA 90210",
+    "City": "BEVERLY HILLS",
+    "State": "CA",
+    "CountryCode": "US",
+    "PostalCode": "90210",
+    "Phone": "2233322233322",
+    "Email": "keith@rollingstones.uk"
+  },
+  "BillingAddress": {
+    "FirstName": "Keith",
+    "LastName": "Richards",
+    "Line1": " ",
+    "City": " ",
+    "State": " ",
+    "CountryCode": "US",
+    "PostalCode": "90210"
+  }
+}
+```
 
 ### Creating An Editor
 

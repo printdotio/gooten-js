@@ -245,7 +245,7 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-			api.orderSubmitPaypal({
+			api.postOrderPaypal({
                 ShipToAddress: {firstName: "Keith", lastName: "Richards", line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", city: "BEVERLY HILLS", state: "CA", postalCode: "90210", countryCode: "US", email: "keith@rollingstones.uk", phone: "2233322233322"},
                 BillingAddress: {firstName: "Keith", lastName: "Richards", postalCode: "90210", countryCode: "US"},
                 Items: [
@@ -273,7 +273,7 @@ describe("GTN.Api",function(){
 			expect(res.Id).toBeDefined();
 		});
     });
-    
+
     it("can submit an order via braintree", function(){
 		var apiCtor = GTN.util.di.get("GTN.Api");
 		var api = new apiCtor({});
@@ -282,7 +282,7 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-			api.orderSubmitBraintree({
+			api.postOrderBraintree({
                 ShipToAddress: {firstName: "Keith", lastName: "Richards", line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", city: "BEVERLY HILLS", state: "CA", postalCode: "90210", countryCode: "US", email: "keith@rollingstones.uk", phone: "2233322233322"},
                 BillingAddress: {firstName: "Keith", lastName: "Richards", postalCode: "90210", countryCode: "US"},
                 Items: [
@@ -324,7 +324,7 @@ describe("GTN.Api",function(){
 
 		runs(function(){
 			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
-			api.orderSubmitOnCredit({
+			api.postOrderOnCredit({
                 ShipToAddress: {firstName: "Keith", lastName: "Richards", line1: "1023 N ROXBURY DR BEVERLY HILLS CA 90210", city: "BEVERLY HILLS", state: "CA", postalCode: "90210", countryCode: "US", email: "keith@rollingstones.uk", phone: "2233322233322"},
                 BillingAddress: {firstName: "Keith", lastName: "Richards", postalCode: "90210", countryCode: "US"},
                 Items: [
@@ -351,6 +351,34 @@ describe("GTN.Api",function(){
 		runs(function(){
 			expect(err).toBeUndefined();
 			expect(res.Id).toBeDefined();
+		});
+    });
+
+    it("can get a order info",function(){
+		var apiCtor = GTN.util.di.get("GTN.Api");
+		var api = new apiCtor({});
+		var res;
+		var err;
+
+		runs(function(){
+			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
+			api.getOrder({Id: "13-cdc4b014-bafc-4681-b0e0-7265d2c11aa1"},function(error,result){
+				res = result;
+				err = error;
+			});
+		});
+
+		waitsFor(function(){ return res || err; }, 10000);
+
+		runs(function(){
+			expect(err).toBeUndefined();
+			expect(res.Id).toBeDefined();
+			expect(res.NiceId).toBeDefined();
+			expect(res.SourceId).toBeDefined();
+			expect(res.Items.length).toBe(2);
+			expect(res.Total).toBeDefined();
+			expect(res.ShippingTotal).toBeDefined();
+			expect(res.ShippingAddress).toBeDefined();
 		});
     });
 });

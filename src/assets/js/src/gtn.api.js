@@ -150,7 +150,7 @@ GTN.Api = function(util, config) {
             }, cb);
         };
 
-        this.orderSubmitPaypal = function(params, cb) {
+        this.postOrderPaypal = function(params, cb) {
             util.asserts.notNullOrUndefined("cb", cb);
 
             util.asserts.notNullOrUndefined("ShipToAddress", params.ShipToAddress);
@@ -189,7 +189,7 @@ GTN.Api = function(util, config) {
             }, cb);
         };
 
-        this.orderSubmitBraintree = function(params, cb) {
+        this.postOrderBraintree = function(params, cb) {
             util.asserts.notNullOrUndefined("cb", cb);
 
             util.asserts.notNullOrUndefined("ShipToAddress", params.ShipToAddress);
@@ -240,7 +240,7 @@ GTN.Api = function(util, config) {
             }, cb);
         };
 
-        this.orderSubmitOnCredit = function(params, cb) {
+        this.postOrderOnCredit = function(params, cb) {
             util.asserts.notNullOrUndefined("cb", cb);
 
             util.asserts.notNullOrUndefined("ShipToAddress", params.ShipToAddress);
@@ -270,7 +270,7 @@ GTN.Api = function(util, config) {
             util.asserts.notNullOrUndefined("Payment.Total", params.Payment.Total);
 
             util.asserts.notNullOrUndefined("Payment.PartnerBillingKey", params.PartnerBillingKey);
-            
+
             return util.http.post({
                 url: self._urlFactory("orders", [
                     ["recipeId", config.get("recipeId")]
@@ -278,6 +278,19 @@ GTN.Api = function(util, config) {
                 data: params
             }, cb);
         };
+
+        this.getOrder = function(params, cb){
+            util.asserts.notNullOrUndefined("cb", cb);
+
+            util.asserts.notNullOrUndefined("cb", params.Id);
+
+            return util.http.get({
+                url: self._urlFactory("orders", [
+                    ["recipeId", config.get("recipeId")],
+                    ["id", params.Id]
+                ])
+            }, cb);
+        }
     }
 };
 
