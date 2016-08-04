@@ -979,7 +979,7 @@ api.getOrder(
 
 This yields the response:
 
-```
+```json
 {
   "Id": "13-cdc4b014-bafc-4681-b0e0-7265d2c11aa1",
   "NiceId": "Richa13-cd",
