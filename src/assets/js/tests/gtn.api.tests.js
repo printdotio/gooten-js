@@ -194,6 +194,39 @@ describe("GTN.Api",function(){
 		});
     });
 
+    it("can get total for items in cart with coupons applied", function(){
+        var apiCtor = GTN.util.di.get("GTN.Api");
+		var api = new apiCtor({});
+		var res;
+		var err;
+
+		runs(function(){
+			GTN.util.di.get("Gtn.config").set("recipeId",recipeId);
+			api.getPrices({
+                ShipToAddress: {countryCode: "US"},
+                Items: [
+                    {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 1, Quantity: 1},
+                    {SKU: "Framed_12x18_Black_Lustre", ShipCarrierMethodId: 1, Quantity: 1}
+                ],
+                CouponCodes: ["FREESHIPNEW"]
+            },function(error,result){
+            	dump(JSON.stringify(result))
+				res = result;
+				err = error;
+			});
+		});
+		waitsFor(function(){ return res || err; }, 10000);
+
+		runs(function(){
+			expect(err).toBeUndefined();
+			expect(res.Items).toBeDefined();
+			expect(res.Items.Price).toBeGreaterThan(0);
+			expect(res.Items.CurrencyCode).toBeDefined();
+			expect(res.Coupons.length).toBe(1);
+			expect(res.HadCouponApply).toBe(true);
+		});
+    });
+
     it("can get shipping options for items in cart", function(){
         var apiCtor = GTN.util.di.get("GTN.Api");
 		var api = new apiCtor({});

@@ -440,11 +440,6 @@ So once you have a template, in order to draw the UI, one would:
 
 ### Getting a Total For Items in A Cart
 
-**TODO**
-
- - show example with coupon[s]
-
-
 Once you have items you can get item, shipping, and tax information via one call to `getPrices`. 
 
 The `getPrices` function `params` argument takes several values:
@@ -453,6 +448,7 @@ The `getPrices` function `params` argument takes several values:
  - `SKU` - required - SKU of product
  - `ShipCarrierMethodId` - required - Id of shipping method
  - `Quantity` - required - number of items with this SKU
+ - `CouponCodes` - optional - list of coupon codes
 
 Its important to note that shipping prices can change based off of how much data you give us. For example, if you give us a full address that is in the US, you may get a different price than if you only passed in the `countryCode`. Thus, **where possible, pass in the entire address as often as possible**.
 
@@ -498,11 +494,76 @@ This yields the response:
 }
 ```
 
+The same example above with coupon code:
 
+```js
+api.getPrices(
+    {
+        ShipToAddress: {
+            countryCode: "US",
+        }
+    },
+    Items: [
+            {SKU: "CanvsWrp-BlkWrp-18x24", ShipCarrierMethodId: 1, Quantity: 1},
+        ],
+    CouponCodes: ["COUPON"]
+    }, function(error,result){
+        ...
+    }
+);
+```
 
+This yields the response:
 
-
-
+```json
+{
+  "Items": {
+    "Price": 30.27,
+    "CurrencyCode": "USD",
+    "FormattedPrice": "$30.27",
+    "CurrencyFormat": "${1}",
+    "CurrencyDigits": 2
+  },
+  "Shipping": null,
+  "Tax": {
+    "Price": 0.0,
+    "CurrencyCode": "USD",
+    "FormattedPrice": "$0.00",
+    "CurrencyFormat": "${1}",
+    "CurrencyDigits": 2
+  },
+  "Coupons": [
+    {
+      "CouponSavings": {
+        "Price": 2.0,
+        "CurrencyCode": "USD",
+        "FormattedPrice": "$2.00",
+        "CurrencyFormat": "${1}",
+        "CurrencyDigits": 2
+      },
+      "CouponInfo": {
+        "CouponCode": "COUPON",
+        "CouponType": "DollarsOff",
+        "PercentOff": null,
+        "DollarsOff": 2.0,
+        "ConvertedDollarsOff": 2.0,
+        "IsCouponSingleUse": true,
+        "AppliedToSkus": [
+          "CanvsWrp-BlkWrp-18x24"
+        ],
+        "MinOrderAmount": null,
+        "ConvertedMinOrderAmount": null,
+        "ShipmentMethodId": 0
+      },
+      "HadCouponApply": true
+    }
+  ],
+  "HadCouponApply": true,
+  "HadError": false,
+  "CouponSavings": null,
+  "CouponInfo": null
+}
+```
 
 
 
