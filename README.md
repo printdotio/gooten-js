@@ -114,7 +114,7 @@ The `getProducts` function `params` argument takes 4 values:
  - `countryCode` - required -  the 2 character country code the user is interested in shipping to
  - `currencyCode` - optional, defaults to "USD" - the currency to get prices in
  - `languageCode` - optional, defaults to "en" - the language to have product data returned in
- - `showAllProducts` - optional, defaults to `true` - whether to return all the products that are orderable in the user's region, or to only return products the user has set up in the [product settings page](https://www.gooten.com/admin#product-settings). TODO check that link
+ - `showAllProducts` - optional, defaults to `true` - whether to return all the products that are orderable in the user's region, or to only return products the user has set up in the [product settings page](https://www.gooten.com/admin#/products).
 
 ```js
 // request the API constructor from our DI container
@@ -191,7 +191,7 @@ The `getProductVariants` function `params` argument takes 5 values:
  - `countryCode` - required -  the 2 character country code the user is interested in shipping to
  - `currencyCode` - optional, defaults to "USD" - the currency to get prices in
  - `languageCode` - optional, defaults to "en" - the language to have product data returned in
- - `showAllProducts` - optional, defaults to `true` - whether to return all the products that are orderable in the user's region, or to only return products the user has set up in the [product settings page](https://www.gooten.com/admin#product-settings). TODO check that link
+ - `showAllProducts` - optional, defaults to `true` - whether to return all the products that are orderable in the user's region, or to only return products the user has set up in the [product settings page](https://www.gooten.com/admin#/products).
 
 ```js
 // request the API constructor from our DI container
@@ -710,17 +710,8 @@ This yields the response:
 }
 ```
 
-**TODO**
- - explain which ID is used on order submission
- - explain grouping of items together
-
-
-
-
-
-
-
-
+For each SKU we provide several shipment options. Please use correspondent method `Id` from the response above as `ShipCarrierMethodId` field while submitting an order. `Overnight` option is available for US customers only.
+Based on several rules like size of item and weight our API decides how items can be finally groupped. So `SKUs` field represents a list of items which can be send together in one post box. It dramatically reduce shipment costs.
 
 
 ### Submitting an Order via Paypal
