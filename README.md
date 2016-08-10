@@ -711,6 +711,7 @@ This yields the response:
 ```
 
 For each SKU we provide several shipment options. Please use correspondent method `Id` from the response above as `ShipCarrierMethodId` field while submitting an order. `Overnight` option is available for US customers only.
+
 Based on several rules like size of item and weight our API decides how items can be finally groupped. So `SKUs` field represents a list of items which can be send together in one post box. It dramatically reduce shipment costs.
 
 
