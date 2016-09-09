@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Fri Nov 22 2013 10:07:27 GMT-0500 (Eastern Standard Time)
 var fs = require('fs');
-var file = JSON.parse(fs.readFileSync(__dirname + '/editorfiles.json', 'utf8'));
+var file = JSON.parse(fs.readFileSync(__dirname + '/gtnfiles.json', 'utf8'));
 
 module.exports = function(config) {
     config.set({
@@ -64,7 +64,7 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: ['chrome_without_security', /*'Chrome','IE'*/],
+        browsers: ['chrome_without_security' /*'Chrome','IE'*/],
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
@@ -72,6 +72,6 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, it capture browsers, run tests and exit
-        singleRun: false,
+        singleRun: false
     });
 };

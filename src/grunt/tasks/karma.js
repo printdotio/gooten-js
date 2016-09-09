@@ -9,6 +9,6 @@ module.exports = function (grunt) {
       frameworks: ['jasmine-ajax','jasmine'],
       browserNoActivityTimeout: 999999
     },
-    core: {},
+    core: {}
   });
 };

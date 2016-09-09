@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = function (grunt) {
-	grunt.config('clean', ['assets/dist/']);
+	grunt.config('clean', ['src/assets/dist/']);
 };
